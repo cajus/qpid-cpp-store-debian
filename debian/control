@@ -1,0 +1,19 @@
+Source: rhmessaging
+Section: misc
+Priority: extra
+Maintainer: Cajus Pollmeier <cajus@debian.org>
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev, autoconf (>= 2.61), automake (>= 1.9.6), libtool (>= 1.5.22), libqpidcommon2-dev (>= 0.12), libqmf2-dev (>=0.12), libqpidbroker2-dev (>=0.12), libaio-dev, libdb4.8++-dev
+X-Python-Version: >= 2.6
+Standards-Version: 3.9.1
+Homepage: http://qpidcomponents.org
+
+Package: qpidd-rhmessaging
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, qpidd (>= 0.12)
+Description: Apache qpid persistent storage module
+ Apache Qpid is a cross-platform Enterprise Messaging system which implements
+ the Advanced Message Queuing Protocol (AMQP), providing message brokers
+ written in C++ and Java, along with clients for C++, Java JMS, .Net, Python,
+ and Ruby.
+ .
+ This package contains a plugin for qpidd to enable perssitent queues.
