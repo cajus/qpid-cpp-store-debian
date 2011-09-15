@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Copyright (c) 2007 Red Hat, Inc.
+#
+# This file is part of the Qpid async store library msgstore.so.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+# USA
+#
+# The GNU Lesser General Public License is available in the file COPYING.
+
+JDATA_DIR=jdata
+TAR_DIR=rd_test_jrnls
+
+function get_filename
+{
+    local prefix=$1
+    local file_num=$2
+    local suffix=$3
+    
+    if (( file_num < 10 )); then
+        local num="000${file_num}"
+    elif (( file_num < 100 )); then
+        local num="00${file_num}"
+    elif (( file_num < 1000 )); then
+        local num="0${file_num}"
+    else
+        local num="${file_num}"
+    fi
+    FILENAME=${prefix}${num}${suffix}
+    return 0
+}
+
+if (( $# != 1 )); then
+    echo "Incorrect args, expected 1 arg (usage: \"prep <testnum>\")"
+    exit
+fi
+
+get_filename "t" $1 ".tar.gz"
+if [[ -d ${JDATA_DIR} ]]; then
+    rm -rf ${JDATA_DIR}/*
+else
+    mkdir -p ${JDATA_DIR}
+fi
+if [[ -f "${TAR_DIR}/${FILENAME}" ]]; then
+    tar -C ${JDATA_DIR} -xzf "${TAR_DIR}/${FILENAME}"
+else
+    echo "Error: file \"${TAR_DIR}/${FILENAME}\" not found."
+fi

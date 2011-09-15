@@ -1,0 +1,21 @@
+This directory contains experimental code. It is not (currently)
+a part of the main store, and can be safely ignored for all
+normal builds.
+
+This is a refactorization of the lib/jrnl directory, with completely
+renamed classes according to normal C++ naming standards used elsewhere
+in this project.
+
+Also included are the following enhancements:
+* A new record type for journal events. This will allow the redelivered
+  flag to be set correctly (amongst other things)
+* A new record tail layout which contains a checksum. This will solve the
+  issue of losing data unknowingly if the first and last pages of a
+  multi-page write occur, but some in-between pages are still pending at
+  time of failure.
+* Some minor refactoring of the FileHeader type
+* A clean-up with a proper heirarchy of these classes
+
+NOTE: these will break binary compatibility with earlier journals - an
+upgrade issue. This journal will need to have its revision number incremented
+from 1 to 2.

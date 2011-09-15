@@ -1,0 +1,140 @@
+Index: tests/.valgrind.supp
+===================================================================
+--- tests/.valgrind.supp	(revision 4214)
++++ tests/.valgrind.supp	(working copy)
+@@ -1,33 +1,74 @@
+ {
+-   Benign error in libcpg.
+-   Memcheck:Param
+-   socketcall.sendmsg(msg.msg_iov[i])
+-   obj:*/libpthread-2.5.so
+-   obj:*/libcpg.so.2.0.0
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:_Znw?
++   fun:_ZNSs4_Rep9_S_createE??RKSaIcE
++   obj:*/libstdc++.so.6.0.3
++   fun:_ZNSsC1EPKcRKSaIcE
++   fun:_ZN4qpid34options_description_less_easy_initclEPKcPKN5boost15program_options14value_semanticES2_
++   fun:_ZN4qpid3log5posix11SinkOptionsC1ERKSs
++   fun:_ZN4qpid3log11SinkOptions6createERKSs
++   fun:_ZN4qpid3log7OptionsC1ERKSsS3_
++   fun:_ZN4qpid3log6LoggerC1Ev
+ }
+-
+ {
+-   Uninitialised value problem in _dl_relocate (F7, F8)
+-   Memcheck:Cond
+-   fun:_dl_relocate_object
+-   fun:*dl_*
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:_Znwm
++   fun:_ZN5boost15program_options29options_description_easy_initclEPKcPKNS0_14value_semanticES3_
++   fun:_ZN4qpid34options_description_less_easy_initclEPKcPKN5boost15program_options14value_semanticES2_
++   fun:_ZN4qpid3log5posix11SinkOptionsC1ERKSs
++   fun:_ZN4qpid3log11SinkOptions6createERKSs
++   fun:_ZN4qpid3log7OptionsC1ERKSsS3_
++   fun:_ZN4qpid3log6LoggerC1Ev
+ }
+-
+ {
+-   False "possibly leaked" in boost program_options - global std::string var.
++   <insert a suppression name here>
+    Memcheck:Leak
+-   fun:_Znwj
+-   fun:_ZNSs4_Rep9_S_createEjjRKSaIcE
+-   obj:/usr/lib/libstdc++.so.6.0.8
+-   fun:_ZNSsC1EPKcRKSaIcE
+-   obj:/usr/lib/libboost_program_options.so.1.33.1
++   fun:_Znwm
++   fun:_ZN5boost15program_options19options_description3addERKS1_
++   fun:_ZN4qpid3log7OptionsC1ERKSsS3_
++   fun:_ZN4qpid3log6LoggerC1Ev
+ }
+-
+ {
+-   Probable use after delete problem in boost::unit_test
+-   Memcheck:Addr8
+-   fun:_ZN5boost9unit_test14framework_implD1Ev
+-   fun:exit
+-   fun:(below main)
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:_Znw?
++   fun:_ZNSt6vectorISsSaISsEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPSsS1_EERKSs
++   fun:_ZN4qpid7Options14register_namesESs
++   fun:_ZN4qpid34options_description_less_easy_initclEPKcPKN5boost15program_options14value_semanticES2_
++   fun:_ZN4qpid3log7OptionsC1ERKSsS3_
++   fun:_ZN4qpid3log6LoggerC1Ev
+ }
++{
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:_Znwm
++   fun:_ZN5boost15program_options19options_description3addERKS1_
++   fun:_ZN4qpid3log7OptionsC1ERKSsS3_
++   fun:_ZN4qpid3log6LoggerC1Ev
++}
++{
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:_Znwm
++   fun:_ZNSt6vectorISsSaISsEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPSsS1_EERKSs
++   fun:_ZN4qpid7Options14register_namesESs
++   fun:_ZN4qpid34options_description_less_easy_initclEPKcPKN5boost15program_options14value_semanticES2_
++   fun:_ZN4qpid3log7OptionsC1ERKSsS3_
++   fun:_ZN4qpid3log6LoggerC1Ev
++}
++{
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:calloc
++   fun:_dl_allocate_tls
++   fun:pthread_create@@GLIBC_2.*
++}
++{
++   <insert a suppression name here>
++   Memcheck:Leak
++   fun:_Znwm
++   fun:_ZN5boost9unit_test9test_caseC2ENS0_13basic_cstringIKcEEbmb
++}
+ 
+Index: configure.ac
+===================================================================
+--- configure.ac	(revision 4214)
++++ configure.ac	(working copy)
+@@ -62,7 +62,6 @@
+ # -Wshadow - warns about boost headers.
+ 
+ if test "$enable_WARNINGS" = yes; then
+-  gl_COMPILER_FLAGS(-Werror)
+   gl_COMPILER_FLAGS(-pedantic)
+   gl_COMPILER_FLAGS(-Wall)
+   gl_COMPILER_FLAGS(-Wextra)
+@@ -71,7 +70,6 @@
+   gl_COMPILER_FLAGS(-Wcast-qual)
+   gl_COMPILER_FLAGS(-Wcast-align)
+   gl_COMPILER_FLAGS(-Wno-long-long)
+-  gl_COMPILER_FLAGS(-Wvolatile-register-var)
+   gl_COMPILER_FLAGS(-Winvalid-pch)
+   gl_COMPILER_FLAGS(-Wno-system-headers)
+   AC_SUBST([WARNING_CFLAGS], [$COMPILER_FLAGS])
+Index: lib/MessageStoreImpl.cpp
+===================================================================
+ --- lib/MessageStoreImpl.cpp   (revision 4214)
++++ lib/MessageStoreImpl.cpp    (working copy)
+@@ -355,13 +355,6 @@
+             tplStorePtr.reset(new TplJournalImpl(timer, "TplStore", getTplBaseDir(), "tpl", defJournalGetEventsTimeout, defJournalFlushTimeout, agent));
+             isInit = true;
+         } catch (const DbException& e) {
+-            if (e.get_errno() == DB_VERSION_MISMATCH)
+-            {
+-                QPID_LOG(error, "Database environment mismatch: This version of db4 does not match that which created the store database.: " << e.what());
+-                THROW_STORE_EXCEPTION_2("Database environment mismatch: This version of db4 does not match that which created the store database. "
+-                                        "(If recovery is not important, delete the contents of the store directory. Otherwise, try upgrading the database using "
+-                                        "db_upgrade or using db_recover - but the db4-utils package must also be installed to use these utilities.)", e);
+-            }
+             QPID_LOG(error, "BDB exception occurred while initializing store: " << e.what());
+             if (bdbRetryCnt >= retryMax)
+                 THROW_STORE_EXCEPTION_2("BDB exception occurred while initializing store", e);

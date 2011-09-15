@@ -1,0 +1,8 @@
+To compile on RHEL4, run:
+
+make apply
+
+This will apply all necessary patches. Change dirs back to cpp
+and run ./bootstrap and ./configure as ususal. Make sure that if
+./configure is run with --with-qpid-checkout, it points to a version
+of qpid which has also been patched for RHEL4.

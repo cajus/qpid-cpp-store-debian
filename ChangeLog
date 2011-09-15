@@ -1,0 +1,132 @@
+2007-08-22 Alan Conway <aconway@redhat.com>
+
+	* tests/run-unit-tests: added LD_PRELOAD libdlclose.
+	  Keeps DllPlugInTester symbols in memory for valgrind output.
+	* tests/SimpleTest.cpp: Fixed memory leak in test.
+	* tests/Makefile.am: Added libdlclose for CppUnit tests.
+	* tests/.vg-supp: Copied latest qpid suppressions.
+	
+
+2007-04-15  Alan Conway  <aconway@redhat.com>
+
+	* configure.ac: build against installed or checked-out qpid.
+	 - check for installed qpid headers/libs
+	 - --with-qpid-checkout option, use checkout instead of installed.y
+	* README: Update build instructions.
+
+	* tests/Makeifile.am: Use qpid info from configure.
+	* tests/*.cpp.h: #include <qpid/...> to include from installed.
+	* tests/system_test.sh: Use qpid info from configure.
+	* tests/test_plugin.h: Local copy of qpid's test_plugin.h file.
+
+	* lib/Makefile.am: Use qpid info from configure.
+	* lib/*.cpp.h: #include <qpid/...> to include from installed.
+	
+	* Makefile.am Add rpmbuild targets.
+	* rhm.spec.in: RPM spec file.
+	
+
+2007-02-07  Alan Conway  <aconway@redhat.com>
+
+	* bootstrap: automake --add-missing to install missing build-aux files.
+	* build-aux: added, required by autoconf/automake.
+
+2007-01-26  Jim Meyering  <jim@meyering.net>
+
+	* tests/setup (trap): Kill with "-2", not "-SIGINT", since the
+	former is more portable.
+
+2007-01-18  Jim Meyering  <jim@meyering.net>
+
+	* options.mk: Remove this file.  No longer used.
+
+2007-01-15  Jim Meyering  <jim@meyering.net>
+
+	Instrument all tests so that they are run via valgrind:
+	check for both errors and leaks.
+	* configure.ac: Check for valgrind.
+	* tests/Makefile.am (TESTS_ENVIRONMENT): Export VALGRIND.
+	* tests/.vg-supp: New file, exempting known leaks on rawhide and
+	Debian/unstable.  Leaks on the latter system all seem to originate
+	in cppunit.  Some of the rawhide ones look suspicious.
+	* tests/run-unit-tests: Use new "setup" file.
+	Invoke DllPlugInTester via $vg (aka valgrind).
+	Refer to the source directory using $pwd, since we're now running
+	from a temporary subdirectory.
+	* tests/system_test.sh: Remove traps. That is now done by "setup".
+	[VERBOSE]: Print qpidd --version.
+	Invoke qpidd via $vg.
+	Add a kludgey "sleep 3", because it can take a while for libtool
+	to start valgrind to start qpidd, in the background.
+	Ideally, the python script would simply sleep-0.3-and-retry for
+	a couple seconds, upon failure of the initial connection attempt.
+	* tests/setup: New file.
+
+2007-01-10  Jim Meyering  <jim@meyering.net>
+
+	system_test.sh didn't work at all (would seg-fault)
+	* lib/BdbMessageStore.cpp: Comment out all attempts to write
+	diagnostics to std::cout.  A shared library must not do that,
+	and this one would segfault when invoked via qpidd -s ....
+	(~BdbMessageStore): Rather than simply writing to std::cout,
+	re-throw any close-provoked exception.
+
+2007-01-09  Jim Meyering  <jim@meyering.net>
+
+	* tests/system_test.sh (xml_spec): Reflect name change:
+	s/amqp-8.0.xml/amqp.0-8.xml/.
+
+2006-12-22  Jim Meyering  <jim@meyering.net>
+
+	* lib/Makefile.am (libbdbstore_la_LIBADD): Put libqpidcommon.la
+	here, not in LDADD.
+	(LDADD): Remove.
+
+	* configure.ac: Also check for libdb_cxx-4.6, 4.5, and 4.4.
+	Rawhide is at 4.5.
+
+	* tests/system_test.sh: Rewrite to ensure that it doesn't leave
+	a running qpidd process or temporary files in the current directory.
+	* tests/Makefile.am (TESTS_ENVIRONMENT): Add these: abs_builddir,
+	abs_srcdir.
+
+	* tests/system_test.sh (xml_spec): Adjust to work in new framework.
+	Check, up front, for xml spec file.
+
+	* Makefile: Remove.
+
+	Adapt to updated ->deliver signature.
+	* tests/SimpleTest.cpp: Include <AMQP_HighestVersion.h>.
+	(CppUnit::TestCase): Adjust callers by adding an argument:
+	&(qpid::framing::highestProtocolVersion).
+
+2006-12-21  Jim Meyering  <jim@meyering.net>
+
+	* lib/BdbMessageStore.cpp: Avoid some warnings:
+	(BdbMessageStore::getRecordSize): Remove decl of unused "status".
+	(BdbMessageStore::recoverQueues): Remove decl of unused "status".
+	(BdbMessageStore::recoverQueues): Declare maxQueueId to be of type
+	u_int64_t, not int, to avoid the warning about "comparison between
+	signed and unsigned integer expressions".
+	(BdbMessageStore::recoverMessages): Likewise, but for maxMessageId.
+	Avoid three warnings like this:
+	  error: ISO C++ forbids variable-size array 'buffer'
+	by using 'new/delete' instead.
+
+	* configure.ac: Determine how to set DB_CXX_HEADER_PREFIX, i.e.,
+	to "db/" or to "", used to include <db4/db_cxx.h> or <db_cxx.h>.
+	* lib/Makefile.am (db-inc.h): New generated file.
+	* lib/BdbMessageStore.h (qpid): Include the generated file, "db-inc.h".
+
+	* m4: New directory.
+	* build-aux: New directory.
+	* tests/run-unit-tests: New file.
+	* configure.ac, bootstrap: New files.
+	* Makefile.am, lib/Makefile.am, tests/Makefile.am: New files.
+
+	* tests: New directory, renamed from test/.
+	* test: Remove directory.  Renamed to tests/.
+
+	* src: Remove directory.  Renamed to lib/.
+	* lib: New directory.  Renamed from src/.
+	Begin autoconfiscation.

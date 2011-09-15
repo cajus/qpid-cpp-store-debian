@@ -1,0 +1,37 @@
+THIS IS EXPERIMENTAL CODE
+-------------------------
+
+This folder contains a general async store test and performance measurement tool. It
+uses the jcntl interface to enqueue and dequeue messages as fast as possible from
+a number of persistent store instances.
+
+The parameters fall into two groups:
+
+1. Test parameters:
+
+-m --num_msgs:              Number of messages to send
+-S --msg_size:              Size of each message to be sent
+-q --num_queues:            Number of simultaneous queues
+-t --num_threads_per_queue: Number of threads per queue
+
+2. Store parameters, which control the attributes of the store itself:
+
+-d --jrnl_dir:              Store directory
+-b --jrnl_base_filename:    Base name for journal files
+-f --num_jfiles:            Number of journal files
+-s --jfsize_sblks:          Size of each journal file in sblks (512 byte blocks)
+-a --auto_expand:           Auto-expand the journal
+-e --ae_max_jfiles:         Upper limit on number of auto-expanded journal files
+-p --wcache_num_pages:      Number of write buffer pages
+-c --wcache_pgsize_sblks:   Size of each write buffer page in sblks (512 byte blocks)
+
+For each test:
+
+a. The correct number of store instances are created with their formatted store files;
+b. The timer begins;
+c. The specified number of threads are created and do the work of enqueueing and
+   dequeueing persistent messages on the specified number of store instances;
+d. When all threads have finished working, the timer is stopped;
+e. The results of the test are printed.
+
+

@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# This script builds an executable 'perf' directly from the source files. This is suitable for testing
+# using valgrind and similar tools which don't play well with libtool.
+
+# The variable JOURNAL2, if defined, will link with the new journal2 namespace journal. Otherwise the old journal
+# namespace will be used.
+JOURNAL2=1
+
+# Optimization options
+#OPT="-O0 -ggdb"
+OPT="-O3 -g0 -DNDEBUG"
+
+WARN_COMMON="-Wall -Werror -Wextra -pedantic-errors"
+WARN_OTHER="-Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wsign-compare \
+            -Wmissing-field-initializers -Wpacked -Wredundant-decls -Wunreachable-code -Wno-invalid-offsetof \
+            -Winvalid-pch -Wvolatile-register-var"
+
+PERF_FILES="JournalInstance.cpp \
+            JournalParameters.cpp \
+            JournalPerformanceTest.cpp \
+            PerformanceResult.cpp \
+            ScopedTimer.cpp \
+            Streamable.cpp \
+            TestParameters.cpp"
+
+if [[ ${JOURNAL2}x == x ]] ; then
+
+JRNL_FILES="../lib/jrnl/aio.cpp \
+            ../lib/jrnl/enq_map.cpp \
+            ../lib/jrnl/jdir.cpp \
+            ../lib/jrnl/jrec.cpp \
+            ../lib/jrnl/rfc.cpp \
+            ../lib/jrnl/smutex.cpp \
+            ../lib/jrnl/wmgr.cpp \
+            ../lib/jrnl/cvar.cpp \
+            ../lib/jrnl/enq_rec.cpp \
+            ../lib/jrnl/jerrno.cpp \
+            ../lib/jrnl/lp_map.cpp \
+            ../lib/jrnl/rmgr.cpp \
+            ../lib/jrnl/time_ns.cpp \
+            ../lib/jrnl/wrfc.cpp \
+            ../lib/jrnl/data_tok.cpp \
+            ../lib/jrnl/fcntl.cpp \
+            ../lib/jrnl/jexception.cpp \
+            ../lib/jrnl/lpmgr.cpp \
+            ../lib/jrnl/rrfc.cpp \
+            ../lib/jrnl/txn_map.cpp \
+            ../lib/jrnl/deq_rec.cpp \
+            ../lib/jrnl/jcntl.cpp \
+            ../lib/jrnl/jinf.cpp \
+            ../lib/jrnl/pmgr.cpp \
+            ../lib/jrnl/slock.cpp \
+            ../lib/jrnl/txn_rec.cpp"
+WARN="${WARN_COMMON} ${WARN_OTHER}"
+  
+else
+
+DEFINES=-DJOURNAL2
+
+JRNL_FILES="../lib/jrnl2/DataTokenState.cpp \
+            ../lib/jrnl2/DataToken.cpp \
+            ../lib/jrnl2/Journal.cpp \
+            ../lib/jrnl2/JournalDirectory.cpp \
+            ../lib/jrnl2/JournalErrors.cpp \
+            ../lib/jrnl2/JournalException.cpp \
+            ../lib/jrnl2/JournalParameters.cpp \
+            ../lib/jrnl2/JournalState.cpp"
+WARN="${WARN_COMMON} ${WARN_OTHER} -Wshadow -Wunsafe-loop-optimizations"
+
+fi
+
+rm -f *.o perf
+echo g++ -o perf -I ../lib -std=c++0x ${OPT} ${WARN} -lrt -laio -lpthread ${DEFINES} ${PERF_FILES} ${JRNL_FILES}
+g++ -o perf -I ../lib -std=c++0x ${OPT} ${WARN} -lrt -laio -lpthread ${DEFINES} ${PERF_FILES} ${JRNL_FILES}

@@ -1,0 +1,44 @@
+# Copyright (c) 2008 Red Hat, Inc.
+#
+# This file is part of the Qpid async store library msgstore.so.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+# USA
+#
+# The GNU Lesser General Public License is available in the file COPYING.
+
+# Check for valgrind errors. Sourced by test scripts.
+
+vg_failed() {
+    cat $VG_LOG 1>&2
+    echo $* 1>&2
+    exit 1
+}
+
+vg_check()
+{
+    test -z "$1" || VG_LOG=$1
+    test -f $VG_LOG || vg_failed Valgrind log file $VG_LOG missing.
+    # Ensure there is an ERROR SUMMARY line.
+    grep -E '^==[0-9]+== ERROR SUMMARY:' $VG_LOG > /dev/null || \
+	vg_failed "No valgrind ERROR SUMMARY line in $$vg_failed."
+    # Ensure that the number of errors is 0.
+    grep -E '^==[0-9]+== ERROR SUMMARY: [^0]' $VG_LOG > /dev/null && \
+	vg_failed "Valgrind reported errors in $vg_out; see above." 
+    # Check for leaks.
+    grep -E '^==[0-9]+== +.* lost: [^0]' $VG_LOG && \
+	vg_failed "Found memory leaks (see log file, $VG_LOG); see above."
+    true
+}

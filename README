@@ -1,0 +1,59 @@
+== Asynchronous Message Store Plugin for Qpid c++ Broker ==
+
+-- PREREQUISITES --
+
+ - libaio-devel libs
+ - qpid broker headers and libraries (see below)
+ - all prerequisites for qpid (see qpid's cpp/INSTALL file)
+ - berkeley db4  (tested with version 4.3.29)
+ - python (to run system tests)
+
+For the qpid requirements you can either install the qpidd-devel package or
+check-out the qpid source from:
+
+  https://svn.apache.org/repos/asf/qpid/trunk/qpid
+
+-- BUILDING --
+
+The following steps should build the package (all from the cpp directory):
+
+0. If you are using an svn checkout of qpidd, then build this package following
+   the instructions in the cpp/INSTALL file from that project. The store will not
+   link without the libqpidcommon.so library from that project. If you installed
+   the qpidd package, then this library is installed.
+
+1. './bootstrap' (This initializes the autotools)
+
+2. If the qpidd package is installed, then:
+
+   './configure'
+
+   Otherwise, if using an svn checkout of qpidd (as opposed to installing
+   the qpidd package), then:
+
+   './configure --with-qpid-checkout=<path_to_qpid>'
+
+   (Point to the top-level qpid dir in which the cpp and python dirs exist)
+
+3. 'make' or 'make all' will build the module
+   'make check' will run unit and system tests.
+
+Note: Some system tests require qpid's python test framework, and therefore
+will not run unless python is installed and qpidd is installed from
+subversion and the --with-qpid-checkout option is used in configure.
+
+-- DISTRIBUTION-SPECIFIC NOTES ---
+
+On a RHEL4, some files must be patched to accomodate an early version of boost
+and gcc. See cpp/rhel4-support/README. Note that there are some warnings seen on
+RHEL4 builds and tests that are not present on other platforms.
+
+On a Fedora system install prerequisites via:
+  yum install libaio-devel db4-devel qpidd-devel
+
+On a Debian-based system, install prerequisites via:
+  apt-get install libdb4.3++-dev
+
+On Debian, I need to get this file:
+  /usr/include/db_cxx.h
+
