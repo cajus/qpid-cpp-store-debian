@@ -1,0 +1,27 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -177,17 +177,17 @@
+ AC_SUBST([LIB_DLOPEN])
+ LIBS=$gl_saved_libs
+ 
+-# Require libdb_cxx (any version between 4.2 and 4.8), for the library, and for db_cxx.h.
+-db4_devel_fail=0
+-AC_CHECK_HEADER([db_cxx.h], ,[db4_devel_fail=1])
+-test $db4_devel_fail == 1 && \
+-  AC_MSG_ERROR([db4-devel package missing. Please ensure both db4 and db4-devel are installed. (hint: "yum install db4-devel" should do it...)])
++# Require libdb_cxx (any version between 4.2 and 5.1), for the library, and for db_cxx.h.
++db5_devel_fail=0
++AC_CHECK_HEADER([db_cxx.h], ,[db5_devel_fail=1])
++test $db5_devel_fail == 1 && \
++  AC_MSG_ERROR([db5-devel package missing. Please ensure both db5 and db5-devel are installed. (hint: "yum install db5-devel" should do it...)])
+ 
+ gl_saved_libs=$LIBS
+-AC_SEARCH_LIBS([__db_open], [db_cxx-4.8 db_cxx-4.7 db_cxx-4.6 db_cxx-4.5 db_cxx-4.4 db_cxx-4.3 db_cxx-4.2],
++AC_SEARCH_LIBS([__db_open], [db_cxx-5.1 db_cxx-4.8 db_cxx-4.7 db_cxx-4.6 db_cxx-4.5 db_cxx-4.4 db_cxx-4.3 db_cxx-4.2],
+ 		 [test "$ac_cv_search___db_open" = "none required" ||
+ 		  LIB_BERKELEY_DB=$ac_cv_search___db_open],
+-		  AC_MSG_ERROR([Couldn't find required library in range db_cxx-4.2 through db_cxx-4.8]))
++		  AC_MSG_ERROR([Couldn't find required library in range db_cxx-4.2 through db_cxx-5.1]))
+ AC_SUBST([LIB_BERKELEY_DB])
+ LIBS=$gl_saved_libs
+ 
