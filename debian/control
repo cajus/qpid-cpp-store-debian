@@ -2,9 +2,9 @@ Source: rhmessaging
 Section: misc
 Priority: extra
 Maintainer: Cajus Pollmeier <cajus@debian.org>
-Build-Depends: debhelper (>= 7.0.50~), autotools-dev, autoconf (>= 2.61), automake (>= 1.9.6), libtool (>= 1.5.22), libqpidtypes1-dev (>= 0.12), libqpidcommon2-dev (>= 0.12), libqmf2-dev (>=0.12), libqpidbroker2-dev (>=0.12), libaio-dev, libdb5.1++-dev, python (>= 2.6.6-3~), libboost-all-dev (>= 1.35), uuid-dev, libqpidcommon2, libqpidbroker2, valgrind [any-i386 any-amd64 arm], python-qpid, python-qmf, python-qpid-extras-qmf, qpidd, bash
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev, autoconf (>= 2.61), automake (>= 1.9.6), libtool (>= 1.5.22), libqpidtypes1-dev (>= 0.12), libqpidcommon2-dev (>= 0.12), libqmf2-dev (>=0.12), libqpidbroker2-dev (>=0.12), libaio-dev, libdb++-dev, python (>= 2.6.6-3~), libboost-all-dev (>= 1.35), uuid-dev, libqpidcommon2, libqpidbroker2, valgrind [any-i386 any-amd64 arm], python-qpid, python-qmf, python-qpid-extras-qmf, qpidd
 X-Python-Version: 2.7
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 Homepage: http://qpidcomponents.org
 
 Package: qpidd-msgstore
