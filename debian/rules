@@ -9,9 +9,11 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export QPID_PREFIX=/usr
+
 override_dh_auto_configure:
 	./bootstrap
 	dh_auto_configure -- --with-qpid-prefix=/usr --with-sysconfigdir=/etc/qpid
 
 %:
-	dh  $@
+	dh  $@ --with python2
