@@ -756,11 +756,14 @@
  if test x${RETCODE} != x0; then 
 --- a/tests/start_broker
 +++ b/tests/start_broker
-@@ -21,7 +21,11 @@
+@@ -21,7 +21,14 @@
  #
  # The GNU Lesser General Public License is available in the file COPYING.
  
 -QPIDD=$QPID_BLD/src/qpidd
++export QPID_DATA_DIR=/tmp/qpid
++export QPID_PID_DIR=/tmp/qpid
++
 +if test -s "$QPID_PREFIX"; then
 +    QPIDD=$QPID_PREFIX/sbin/qpidd
 +else
@@ -771,8 +774,14 @@
  exec libtool --mode=execute $VALGRIND $QPIDD --daemon --port=0 --log-enable error+ --log-to-file qpidd.log "$@" > qpidd.port
 --- a/tests/stop_broker
 +++ b/tests/stop_broker
-@@ -25,7 +25,11 @@
+@@ -23,9 +23,17 @@
+ 
+ # Stop the broker, check for errors.
  # 
++
++export QPID_DATA_DIR=/tmp/qpid
++export QPID_PID_DIR=/tmp/qpid
++
  if test -f qpidd.port; then
      export QPID_PORT=`cat qpidd.port`
 -    QPIDD=$QPID_BLD/src/qpidd
@@ -813,3 +822,10 @@
  
  echo "Using directory $TMP_DATA_DIR"
  
+--- a/tests/tests_env.sh
++++ b/tests/tests_env.sh
+@@ -248,4 +248,3 @@
+ func_checkexecs QPIDD_EXEC
+ 
+ FAILING_PYTHON_TESTS="${abs_srcdir}/failing_python_tests.txt"
+-
