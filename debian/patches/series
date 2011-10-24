@@ -1,4 +1,3 @@
-no-ltlibrary.patch
 no-etc.patch
 libexec.patch
 qpid-725859.patch
