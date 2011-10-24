@@ -1,0 +1,10 @@
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -26,7 +26,6 @@
+ # Definitions for client and daemon plugins
+ PLUGINLDFLAGS=-no-undefined -module -avoid-version
+ dmoduledir=$(libdir)/qpid/daemon
+-dmodule_LTLIBRARIES = msgstore.la
+  
+ msgstore_la_LIBADD =            \
+   $(APR_LIBS)                   \

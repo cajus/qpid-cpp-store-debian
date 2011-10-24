@@ -1,0 +1,16 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -22,12 +22,10 @@
+ AUTOMAKE_OPTIONS = 1.9.2 foreign
+ ACLOCAL_AMFLAGS = -I m4
+ 
+-EXTRA_DIST = README etc/rhmd.conf
++EXTRA_DIST = README
+ 
+ DISTCHECK_CONFIGURE_FLAGS = --with-qpid-checkout=/home/kpvdr/mrg/qpid
+ 
+-sysconf_DATA = etc/rhmd.conf
+-
+ SUBDIRS = lib tests tools docs
+ 
+ # Update libtool, if needed.

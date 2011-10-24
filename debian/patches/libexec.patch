@@ -1,0 +1,11 @@
+--- a/tools/Makefile.am
++++ b/tools/Makefile.am
+@@ -19,7 +19,7 @@
+ #
+ # The GNU Lesser General Public License is available in the file COPYING.
+ 
+-qpidexecdir = $(libexecdir)/qpid
++qpidexecdir = $(libdir)/qpid/msgstore
+ qpidexec_SCRIPTS = resize store_chk
+ 
+ pkgpyexec_qpiddir = $(pyexecdir)/qpidstore
