@@ -1,15 +1,26 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
 export QPID_PREFIX=/usr
+
+UPSTREAM = http://anonsvn.jboss.org/repos/rhmessaging/store/tags
+PACKAGE := $(shell dpkg-parsechangelog | sed -ne 's/^Source: \(.*\)$$/\1/p')
+SRC_VERSION := $(shell dpkg-parsechangelog | sed -ne 's/^Version: \(\([0-9]\+\):\)\?\(.*\)-.*/\3/p')
+TARBALL = $(PACKAGE)_$(SRC_VERSION).orig.tar.gz
+
+.PHONY: get-orig-source
+get-orig-source:
+	rm -rf get-orig-source $(TARBALL)
+	mkdir -p get-orig-source/tmp
+	svn export $(UPSTREAM)/qpid-$(SRC_VERSION)-release/cpp get-orig-source/$(PACKAGE)-$(SRC_VERSION)
+	GZIP='--best --no-name' tar czf $(TARBALL) -C get-orig-source $(PACKAGE)-$(SRC_VERSION)
+	rm -rf get-orig-source
+	echo "  "$(TARBALL)" created; move it to the right destination to build the package"
+
+override_dh_auto_test:
+	# Skip until qpidd --quit does not segfault
 
 override_dh_auto_configure:
 	./bootstrap

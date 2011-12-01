@@ -9,3 +9,14 @@
  qpidexec_SCRIPTS = resize store_chk
  
  pkgpyexec_qpiddir = $(pyexecdir)/qpidstore
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -25,7 +25,7 @@
+ 
+ # Definitions for client and daemon plugins
+ PLUGINLDFLAGS=-no-undefined -module -avoid-version
+-dmoduledir=$(libdir)/qpid/daemon
++dmoduledir=/usr/lib/qpid/daemon
+ dmodule_LTLIBRARIES = msgstore.la
+  
+ msgstore_la_LIBADD =            \
