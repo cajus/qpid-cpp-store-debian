@@ -1,3 +1,8 @@
+Description: Remove the configuration file from etc. It is not read
+ by anything since the module uses the main qpidd configuration
+ file - which includes a commented version of the removed file.
+Forwarded: not-needed
+Author: Cajus Pollmeier <cajus@debian.org>
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -22,12 +22,10 @@
