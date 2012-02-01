@@ -1,3 +1,9 @@
+rhmessaging (0.14-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Cajus Pollmeier <cajus@debian.org>  Wed, 01 Feb 2012 15:55:20 +0100
+
 rhmessaging (0.12-1) unstable; urgency=low
 
   * Initial release. (Closes: #646085)
