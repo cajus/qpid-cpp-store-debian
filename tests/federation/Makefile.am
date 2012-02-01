@@ -1,6 +1,4 @@
-#!/bin/bash
-
-# Copyright (c) 2008, 2009 Red Hat, Inc.
+# Copyright (c) 2010 Red Hat, Inc.
 #
 # This file is part of the Qpid async store library msgstore.so.
 #
@@ -21,7 +19,32 @@
 #
 # The GNU Lesser General Public License is available in the file COPYING.
 
-QPIDD=$QPID_BLD/src/qpidd
-rm -f qpidd.vglog* qpidd.log
-test -n "$VALGRIND" && VALGRIND="$VALGRIND --log-file=qpidd.vglog --suppressions=$QPID_DIR/cpp/src/tests/.valgrind.supp --"
-exec libtool --mode=execute $VALGRIND $QPIDD --daemon --port=0 --log-enable error+ --log-to-file qpidd.log "$@" > qpidd.port
+
+abs_builddir=@abs_builddir@
+abs_srcdir=@abs_srcdir@
+
+TMP_DATA_DIR=$(abs_srcdir)/../tmp_data_dir
+
+TESTS = \
+  run_federation_sys_tests
+
+LONG_TESTS = \
+  run_long_federation_sys_tests
+
+EXTRA_DIST = \
+  federation_tests_env.sh \
+  run_federation_sys_tests \
+  run_long_federation_sys_tests
+
+TESTS_ENVIRONMENT = \
+  QPID_DIR=$(QPID_DIR) \
+  QPID_BLD=$(QPID_BLD) \
+  TMP_DATA_DIR=$(TMP_DATA_DIR) \
+  abs_srcdir=$(abs_srcdir) \
+  abs_builddir=$(abs_builddir)
+  
+check-long: all
+	$(MAKE) check TESTS="$(LONG_TESTS)" SUBDIRS=.
+
+# END
+    

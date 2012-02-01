@@ -64,7 +64,7 @@ namespace jtest
     class ScopedTimer
     {
         double& _elapsed;           ///< Ref to elapsed time, will be written on destruction of ScopedTimer instances
-        std::timespec _startTime;   ///< Start time, set on construction
+        ::timespec _startTime;   ///< Start time, set on construction
 
         /**
          * \brief Convert ::timespec to seconds
@@ -74,7 +74,7 @@ namespace jtest
          * \param ts std::timespec struct containing the time to be converted.
          * \return A double which represents the time in parameter ts in seconds.
          */
-        static double _s_getDoubleTime(const std::timespec& ts);
+        static double _s_getDoubleTime(const ::timespec& ts);
 
     public:
         /**

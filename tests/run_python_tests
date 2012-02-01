@@ -46,7 +46,7 @@ case x$1 in
     xLONG_TEST)
         DEFAULT_PYTHON_TESTS= ;;
     x)
-        DEFAULT_PYTHON_TESTS="*.client_persistence.* *.flow_to_disk.SimpleMaxSizeCountTest.* *.flow_to_disk.MultiDurableQueue*.test_mixed_limit_1 *.flow_to_disk.MultiQueue*.test_mixed_limit_1 *.resize.SimpleTest.*" ;;
+        DEFAULT_PYTHON_TESTS="*.client_persistence.* *.flow_to_disk.SimpleMaxSizeCountTest.* *.flow_to_disk.MultiDurableQueue*.test_mixed_limit_1 *.flow_to_disk.MultiQueue*.test_mixed_limit_1 *.resize.SimpleTest.* *.federation.*" ;;
     *)
         DEFAULT_PYTHON_TESTS=$1
 esac

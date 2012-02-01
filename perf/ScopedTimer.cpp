@@ -54,7 +54,7 @@ namespace jtest
     }
 
     // static
-    double ScopedTimer::_s_getDoubleTime(const ::timespec& ts)
+    double ScopedTimer::_s_getDoubleTime(const std::timespec& ts)
     {
         return ts.tv_sec + (double(ts.tv_nsec) / 1e9);
     }

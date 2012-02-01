@@ -219,9 +219,9 @@ class TxnMap(object):
     
     def _abort(self, xid):
         """Perform an abort operation for the given xid record"""
-        for fid, hdr in self.__map[xid]:
+        for fid, hdr, lock in self.__map[xid]:
             if isinstance(hdr, jrnl.DeqRec):
-                self.__emap.unlock(hdr.rid)
+                self.__emap.unlock(hdr.deq_rid)
         del self.__map[xid]
     
     def _commit(self, xid):

@@ -113,8 +113,8 @@ namespace journal
         static const u_int32_t JERR_RRFC_OPENRD;        ///< Unable to open file for read
 
         // class jrec, enq_rec, deq_rec, txn_rec
-        static const u_int32_t JERR_JREC_BADRECHDR;       ///< Invalid data record header
-        static const u_int32_t JERR_JREC_BADRECTAIL;      ///< Invalid data record tail
+        static const u_int32_t JERR_JREC_BADRECHDR;     ///< Invalid data record header
+        static const u_int32_t JERR_JREC_BADRECTAIL;    ///< Invalid data record tail
 
         // class wmgr
         static const u_int32_t JERR_WMGR_BADPGSTATE;    ///< Page buffer in illegal state.
@@ -150,6 +150,7 @@ namespace journal
         static const u_int32_t JERR_JINF_NOTREGFILE;    ///< Target file is not a regular file
         static const u_int32_t JERR_JINF_BADFILESIZE;   ///< File is of incorrect or unexpected size
         static const u_int32_t JERR_JINF_OWIBAD;        ///< OWI inconsistent (>1 transition in non-ae journal)
+        static const u_int32_t JERR_JINF_ZEROLENFILE;   ///< Journal info file is zero length (empty).
 
         // Negative returns for some functions
         static const int32_t AIO_TIMEOUT;               ///< Timeout waiting for AIO return

@@ -110,7 +110,7 @@ jinf::validate()
     if (_jver != RHM_JDAT_VERSION)
     {
         oss << "File \"" << _filename << "\": ";
-        oss << "RHM_JDAT_VERSION mismatch: " << _jver;
+        oss << "RHM_JDAT_VERSION mismatch: found=" << (int)_jver;
         oss << "; required=" << RHM_JDAT_VERSION << std::endl;
         err = true;
     }
@@ -155,14 +155,14 @@ jinf::validate()
     if (_sblk_size_dblks != JRNL_SBLK_SIZE)
     {
         oss << "File \"" << _filename << "\": ";
-        oss << "JRNL_SBLK_SIZE mismatch: " << _sblk_size_dblks;
+        oss << "JRNL_SBLK_SIZE mismatch: found=" << _sblk_size_dblks;
         oss << "; required=" << JRNL_SBLK_SIZE << std::endl;
         err = true;
     }
     if (_dblk_size != JRNL_DBLK_SIZE)
     {
         oss << "File \"" << _filename << "\": ";
-        oss << "JRNL_DBLK_SIZE mismatch: " << _dblk_size;
+        oss << "JRNL_DBLK_SIZE mismatch: found=" << _dblk_size;
         oss << "; required=" << JRNL_DBLK_SIZE << std::endl;
         err = true;
     }
@@ -421,9 +421,11 @@ jinf::read(const std::string& jinf_filename)
     std::ifstream jinfs(jinf_filename.c_str());
     if (!jinfs.good())
         throw jexception(jerrno::JERR__FILEIO, jinf_filename.c_str(), "jinf", "read");
+    u_int32_t charcnt = 0;
     while (jinfs.good())
     {
         jinfs.getline(buff, 1023);
+        charcnt += std::strlen(buff);
         if (std::strstr(buff, "journal_version"))
             _jver = u_int16_value(buff);
         else if(std::strstr(buff, "id_string"))
@@ -461,6 +463,8 @@ jinf::read(const std::string& jinf_filename)
         }
     }
     jinfs.close();
+    if (charcnt == 0)
+        throw jexception(jerrno::JERR_JINF_ZEROLENFILE, jinf_filename.c_str(), "jinf", "read");
 }
 
 bool

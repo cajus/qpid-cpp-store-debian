@@ -281,14 +281,11 @@ QPID_AUTO_TEST_CASE(Enqueue)
         FieldTable settings;
         queue->create(settings);
 
-        boost::intrusive_ptr<Message> msg = MessageUtils::createMessage(exchange, routingKey, messageId, 14);
+        boost::intrusive_ptr<Message> msg = MessageUtils::createMessage(exchange, routingKey, messageId, true, 14);
         MessageUtils::addContent(msg, data1);
         MessageUtils::addContent(msg, data2);
 
-        msg->getProperties<DeliveryProperties>()->setDeliveryMode(PERSISTENT);
-        FieldTable table;
-        table.setString("abc", "xyz");
-        msg->getProperties<MessageProperties>()->setApplicationHeaders(table);
+        msg->insertCustomProperty("abc", "xyz");
 
         queue->enqueue(0, msg);
     }//db will be closed
@@ -340,9 +337,8 @@ QPID_AUTO_TEST_CASE(Dequeue)
         FieldTable settings;
         queue->create(settings);
 
-        boost::intrusive_ptr<Message> msg = MessageUtils::createMessage(exchange, routingKey, messageId, 7);
+        boost::intrusive_ptr<Message> msg = MessageUtils::createMessage(exchange, routingKey, messageId, true, 7);
         MessageUtils::addContent(msg, data);
-        msg->getProperties<DeliveryProperties>()->setDeliveryMode(PERSISTENT);
 
         QueuedMessage qm;
         qm.payload = msg;

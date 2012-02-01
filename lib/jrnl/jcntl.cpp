@@ -674,8 +674,6 @@ jcntl::rcvr_get_next_record(u_int16_t& fid, std::ifstream* ifsp, bool& lowi, rcv
             hdr_ok = true;
         else
         {
-            ifsp->clear(ifsp->rdstate()&(~std::ifstream::failbit));
-            assert(!ifsp->fail() && !ifsp->bad());
             if (!jfile_cycle(fid, ifsp, lowi, rd, true))
                 return false;
         }
@@ -862,6 +860,7 @@ jcntl::jfile_cycle(u_int16_t& fid, std::ifstream* ifsp, bool& lowi, rcvdat& rd, 
     {
         if (ifsp->eof() || !ifsp->good())
         {
+            ifsp->clear();
             rd._eo = ifsp->tellg(); // remember file offset before closing
             assert(rd._eo != std::numeric_limits<std::size_t>::max()); // Check for error code -1
             ifsp->close();

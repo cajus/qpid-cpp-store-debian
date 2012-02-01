@@ -29,10 +29,9 @@ INCLUDES=-I$(top_srcdir)/lib -I$(abs_builddir)/../lib -I$(top_srcdir)/lib/gen
 TMP_DATA_DIR=$(abs_srcdir)/tmp_data_dir
 TMP_PYTHON_TEST_DIR=$(abs_srcdir)/python_tests.tmp
  
+SUBDIRS = jrnl . federation
 if DO_CLUSTER_TESTS
-SUBDIRS = jrnl . cluster
-else
-SUBDIRS = jrnl .
+SUBDIRS += cluster
 endif
 
 TESTS =						    \
@@ -103,7 +102,6 @@ TESTS_ENVIRONMENT = \
   QPID_BLD=$(QPID_BLD) \
   VALGRIND=$(VALGRIND) \
   abs_srcdir=$(abs_srcdir) \
-  STORE_LIB=$(abs_builddir)/../lib/.libs/msgstore.so \
   TMP_DATA_DIR=$(TMP_DATA_DIR) \
   TMP_PYTHON_TEST_DIR=$(TMP_PYTHON_TEST_DIR) \
   $(srcdir)/run_test
@@ -115,6 +113,7 @@ check-long: all
 if DO_CLUSTER_TESTS
 	$(MAKE) -C cluster check-long
 endif
+	$(MAKE) -C federation check-long
  
 check-short: all
 	$(MAKE) check TESTS="$(SHORT_TESTS)" SUBDIRS=.

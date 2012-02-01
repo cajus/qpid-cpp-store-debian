@@ -132,6 +132,7 @@ const u_int32_t jerrno::JERR_JINF_STAT          = 0x0c06;
 const u_int32_t jerrno::JERR_JINF_NOTREGFILE    = 0x0c07;
 const u_int32_t jerrno::JERR_JINF_BADFILESIZE   = 0x0c08;
 const u_int32_t jerrno::JERR_JINF_OWIBAD        = 0x0c09;
+const u_int32_t jerrno::JERR_JINF_ZEROLENFILE   = 0x0c0a;
 
 // Negative returns for some functions
 const int32_t jerrno::AIO_TIMEOUT               = -1;
@@ -232,6 +233,7 @@ jerrno::__init()
     _err_map[JERR_JINF_NOTREGFILE] = "JERR_JINF_NOTREGFILE: Target journal data file is not a regular file";
     _err_map[JERR_JINF_BADFILESIZE] = "JERR_JINF_BADFILESIZE: Journal data file is of incorrect or unexpected size";
     _err_map[JERR_JINF_OWIBAD] = "JERR_JINF_OWIBAD: Journal data files have inconsistent OWI flags; >1 transition found in non-auto-expand or min-size journal";
+    _err_map[JERR_JINF_ZEROLENFILE] = "JERR_JINF_ZEROLENFILE: Journal info file zero length";
 
     //_err_map[] = "";
 

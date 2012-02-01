@@ -86,6 +86,7 @@ func_check_clustering ()
 EOF
     	return 1
 	fi
+    CLUSTERING_ENABLED=1
 	return 0
 }
 
@@ -113,6 +114,20 @@ EOF
 	return 0
 }
 
+func_set_python_env()
+#--------------------
+# Set up the python path
+# Params: None
+# Returns: Nothing
+{
+	if test "${QPID_DIR}" -a -d "${QPID_DIR}" ; then
+		QPID_PYTHON=${QPID_DIR}/python
+		QPID_TOOLS=${QPID_DIR}/tools/src/py
+		QMF_LIB=${QPID_DIR}/extras/qmf/src/py
+		export PYTHONPATH=${QPID_PYTHON}:${QMF_LIB}:${QPID_TOOLS}:$PYTHONPATH
+	fi
+}
+
 func_set_env ()
 #--------------
 # Set up the environment based on value of ${QPID_DIR}: if ${QPID_DIR} exists, assume a svn checkout,
@@ -130,9 +145,13 @@ func_set_env ()
 		    QPID_BLD="${QPID_DIR}/cpp"
 	    fi
 	    source $QPID_BLD/src/tests/test_env.sh
-	    CPP_CLUSTER_EXEC="${QPID_BLD}/src/tests/cluster_test"
-	    PYTHON_CLUSTER_EXEC="${QPID_DIR}/cpp/src/tests/$PYTHON_TESTNAME"
-	    CLUSTER_TESTS_FAIL="${QPID_DIR}/cpp/src/tests/cluster_tests.fail"
+#	    CPP_CLUSTER_EXEC="${QPID_BLD}/src/tests/cluster_test"
+#	    PYTHON_CLUSTER_EXEC="${QPID_DIR}/cpp/src/tests/$PYTHON_TESTNAME"
+	    FEDERATION_SYS_TESTS_FAIL="${QPID_DIR}/cpp/src/tests/federation_sys_tests.fail"
+        if test -z ${STORE_LIB}; then
+            STORE_LIB="../../lib/.libs/msgstore.so"
+        fi
+#        export STORE_ENABLE=1
     else
         # Set up the environment based on value of ${QPID_PREFIX} for testing against an installed qpid
         # Alternatively, make sure ${QPID_BIN_DIR}, ${QPID_SBIN_DIR}, ${QPID_LIB_DIR} and ${QPID_LIBEXEC_DIR} are set for
@@ -157,20 +176,19 @@ func_set_env ()
 	    export TEST_STORE_LIB="${QPID_LIB_DIR}/qpid/tests/test_store.so"
 	
 	    # Executables
-	    CPP_CLUSTER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/cluster_test"
-	    PYTHON_CLUSTER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/$PYTHON_TESTNAME"
+#	    CPP_CLUSTER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/cluster_test"
+#	    PYTHON_CLUSTER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/$PYTHON_TESTNAME"
 	    export QPIDD_EXEC="${QPID_SBIN_DIR}/qpidd"
 	    export QPID_CONFIG_EXEC="${QPID_BIN_DIR}/qpid-config"
 	    export QPID_ROUTE_EXEC="${QPID_BIN_DIR}/qpid-route"
 	    export QPID_CLUSTER_EXEC="${QPID_BIN_DIR}/qpid-cluster"
-	    export RECEIVER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/receiver"
-	    export SENDER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/sender"
-	    export QPID_PYTHON_TEST=${QPID_BIN_DIR}/qpid-python-test
+#	    export RECEIVER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/receiver"
+#	    export SENDER_EXEC="${QPID_LIBEXEC_DIR}/qpid/tests/sender"
+	    export QPID_PYTHON_TEST="${QPID_BIN_DIR}/qpid-python-test"
 
 	    # Data
-	    CLUSTER_TESTS_FAIL="${QPID_LIBEXEC_DIR}/qpid/tests/cluster_tests.fail"
+	    FEDERATION_SYS_TESTS_FAIL="${QPID_LIBEXEC_DIR}/qpid/tests/federation_sys_tests.fail"
     fi
-
 }
 
 
@@ -182,7 +200,7 @@ func_mk_data_dir ()
 # Returns: Nothing
 {
 	if test -z "${TMP_DATA_DIR}"; then
-		TMP_DATA_DIR=/tmp/cluster_tests
+		TMP_DATA_DIR=/tmp/federation_sys_tests
 		echo "TMP_DATA_DIR not set; using ${TMP_DATA_DIR}"
 	fi
 	
@@ -273,29 +291,25 @@ func_checkexecs ()
 
 #--- Start of script ---
 
+func_set_python_env
 func_check_required_env || exit 1   # Cannot run, exit with error
-func_check_clustering || exit 0     # A warning, not a failure.
+func_check_qpid_python || exit 1    # Cannot run, exit with error
+func_check_clustering               # Warning
 
-srcdir=`dirname $0`
-if test -z ${abs_srcdir}; then
-	abs_srcdir=${srcdir}
-fi
-export STORE_LIB="${abs_builddir}/../../lib/.libs/msgstore.so"
-
-PYTHON_TESTNAME=cluster_tests.py
+PYTHON_TESTNAME=federation_sys.py
 func_set_env
 func_mk_data_dir
 
 # Check expected environment vars are set
 func_checkpaths PYTHON_DIR PYTHONPATH TMP_DATA_DIR
-func_checklibs CLUSTER_LIB TEST_STORE_LIB STORE_LIB
-func_checkexecs CPP_CLUSTER_EXEC PYTHON_CLUSTER_EXEC QPIDD_EXEC QPID_CONFIG_EXEC QPID_ROUTE_EXEC RECEIVER_EXEC SENDER_EXEC QPID_PYTHON_TEST
+func_checklibs CLUSTER_LIB STORE_LIB
+func_checkexecs QPIDD_EXEC QPID_CONFIG_EXEC QPID_ROUTE_EXEC QPID_PYTHON_TEST
 
 FAILING_PYTHON_TESTS="${abs_srcdir}/../failing_python_tests.txt"
 if test -z $1; then
-	CLUSTER_TEST="${QPID_PYTHON_TEST} -m cluster_tests -I ${CLUSTER_TESTS_FAIL}"
+	FEDERATION_SYS_TEST="${QPID_PYTHON_TEST} -m cluster_tests -I ${FEDERATION_SYS_TESTS_FAIL}"
 else
-	CLUSTER_TEST="${QPID_PYTHON_TEST} -m cluster_tests -I ${CLUSTER_TESTS_FAIL} cluster_tests.LongTests.*"
+	FEDERATION_SYS_TEST="${QPID_PYTHON_TEST} -m cluster_tests -I ${FEDERATION_SYS_TESTS_FAIL} cluster_tests.LongTests.*"
 	LONG_TEST=1
 fi
 

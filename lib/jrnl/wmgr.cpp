@@ -671,6 +671,8 @@ wmgr::get_events(page_state state, timespec* const timeout, bool flush)
     int ret = 0;
     if ((ret = aio::getevents(_ioctx, flush ? _aio_evt_rem : 1, _aio_evt_rem/*_cache_num_pages + _jc->num_jfiles()*/, _aio_event_arr, timeout)) < 0)
     {
+        if (ret == -EINTR) // Interrupted by signal
+            return 0;
         std::ostringstream oss;
         oss << "io_getevents() failed: " << std::strerror(-ret) << " (" << ret << ")";
         throw jexception(jerrno::JERR__AIO, oss.str(), "wmgr", "get_events");
