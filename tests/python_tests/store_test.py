@@ -31,8 +31,8 @@ def store_args(store_dir = None):
     """Return the broker args necessary to load the async store"""
     assert BrokerTest.store_lib 
     if store_dir == None:
-        return ["--load-module", BrokerTest.store_lib]
-    return ["--load-module", BrokerTest.store_lib, "--store-dir", store_dir]
+        return []
+    return ["--store-dir", store_dir]
 
 class Qmf:
     """

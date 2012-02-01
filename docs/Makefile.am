@@ -38,7 +38,7 @@ man: doxygen
 
 doxygen:
 if DOXYGEN
-	@doxygen jrnl_tmpl.dox
+	@doxygen ${srcdir}/jrnl_tmpl.dox
 # FIXME: doxygen seems to create files that do not compile under latex on 64-bit
 # so the following section is disabled until this is sorted out.
 #	@make -C latex

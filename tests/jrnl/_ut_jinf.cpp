@@ -82,7 +82,7 @@ QPID_AUTO_TEST_CASE(read_constructor)
     BOOST_CHECK(ji.jid().compare(jid) == 0);
     BOOST_CHECK(ji.jdir().compare(test_dir) == 0);
     BOOST_CHECK(ji.base_filename().compare(base_filename) == 0);
-    const timespec this_ts = ji.ts();
+//     const timespec this_ts = ji.ts();
 //     BOOST_CHECK_EQUAL(this_ts.tv_sec, ts.tv_sec);
 //     BOOST_CHECK_EQUAL(this_ts.tv_nsec, ts.tv_nsec);
     BOOST_CHECK_EQUAL(ji.num_jfiles(), u_int16_t(NUM_JFILES));

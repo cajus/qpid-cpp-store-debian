@@ -238,6 +238,11 @@ void MessageStoreImpl::initManagement (qpid::broker::Broker* broker)
             mgmtObject->set_tplCurrentFileCount(tplNumJrnlFiles);
 
             agent->addObject(mgmtObject, 0, true);
+
+            // Initialize all existing queues (ie those recovered before management was initialized)
+            for (JournalListMapItr i=journalList.begin(); i!=journalList.end(); i++) {
+                i->second->initManagement(agent);
+            }
         }
     }
 }
@@ -298,11 +303,11 @@ bool MessageStoreImpl::init(const std::string& dir,
 //     QPID_LOG(info,   "> Auto-expand " << (autoJrnlExpand ? "enabled" : "disabled"));
 //     if (autoJrnlExpand) QPID_LOG(info,   "> Max auto-expand journal files: " << autoJrnlExpandMaxFiles);
     QPID_LOG(info,   "> Default journal file size: " << jfileSizePgs << " (wpgs)");
-    QPID_LOG(info,   "> Default write cache page size: " << wCachePageSizeKib << " (Kib)");
+    QPID_LOG(info,   "> Default write cache page size: " << wCachePageSizeKib << " (KiB)");
     QPID_LOG(info,   "> Default number of write cache pages: " << wCacheNumPages);
     QPID_LOG(info,   "> TPL files per journal: " << tplNumJrnlFiles);
     QPID_LOG(info,   "> TPL journal file size: " << tplJfileSizePgs << " (wpgs)");
-    QPID_LOG(info,   "> TPL write cache page size: " << tplWCachePageSizeKib << " (Kib)");
+    QPID_LOG(info,   "> TPL write cache page size: " << tplWCachePageSizeKib << " (KiB)");
     QPID_LOG(info,   "> TPL number of write cache pages: " << tplWCacheNumPages);
 
     return isInit;
@@ -700,12 +705,13 @@ void MessageStoreImpl::recover(qpid::broker::RecoveryManager& registry)
 
     //recover transactions:
     for (txn_list::iterator i = prepared.begin(); i != prepared.end(); i++) {
+        const PreparedTransaction pt = *i;
         if (mgmtObject != 0) {
             mgmtObject->inc_tplTransactionDepth();
             mgmtObject->inc_tplTxnPrepares();
         }
 
-        std::string xid = i->xid;
+        std::string xid = pt.xid;
 
         // Restore data token state in TxnCtxt
         TplRecoverMapCitr citr = tplRecoverMap.find(xid);
@@ -724,14 +730,14 @@ void MessageStoreImpl::recover(qpid::broker::RecoveryManager& registry)
 
             qpid::broker::RecoverableTransaction::shared_ptr dtx;
             if (!incomplTplTxnFlag) dtx = registry.recoverTransaction(xid, txn);
-            if (i->enqueues.get()) {
-                for (LockedMappings::iterator j = i->enqueues->begin(); j != i->enqueues->end(); j++) {
+            if (pt.enqueues.get()) {
+                for (LockedMappings::iterator j = pt.enqueues->begin(); j != pt.enqueues->end(); j++) {
                     tpcc->addXidRecord(queues[j->first]->getExternalQueueStore());
                     if (!incomplTplTxnFlag) dtx->enqueue(queues[j->first], messages[j->second]);
                 }
             }
-            if (i->dequeues.get()) {
-                for (LockedMappings::iterator j = i->dequeues->begin(); j != i->dequeues->end(); j++) {
+            if (pt.dequeues.get()) {
+                for (LockedMappings::iterator j = pt.dequeues->begin(); j != pt.dequeues->end(); j++) {
                     tpcc->addXidRecord(queues[j->first]->getExternalQueueStore());
                     if (!incomplTplTxnFlag) dtx->dequeue(queues[j->first], messages[j->second]);
                 }
@@ -746,13 +752,13 @@ void MessageStoreImpl::recover(qpid::broker::RecoveryManager& registry)
             opcc->recoverDtok(citr->second.rid, xid);
             opcc->prepare(tplStorePtr.get());
 
-            if (i->enqueues.get()) {
-                for (LockedMappings::iterator j = i->enqueues->begin(); j != i->enqueues->end(); j++) {
+            if (pt.enqueues.get()) {
+                for (LockedMappings::iterator j = pt.enqueues->begin(); j != pt.enqueues->end(); j++) {
                     opcc->addXidRecord(queues[j->first]->getExternalQueueStore());
                 }
             }
-            if (i->dequeues.get()) {
-                for (LockedMappings::iterator j = i->dequeues->begin(); j != i->dequeues->end(); j++) {
+            if (pt.dequeues.get()) {
+                for (LockedMappings::iterator j = pt.dequeues->begin(); j != pt.dequeues->end(); j++) {
                     opcc->addXidRecord(queues[j->first]->getExternalQueueStore());
                 }
             }
@@ -1688,13 +1694,13 @@ MessageStoreImpl::StoreOptions::StoreOptions(const std::string& name) :
     oss1 << "Default number of files for each journal instance (queue). [Allowable values: " <<
                     JRNL_MIN_NUM_FILES << " - " << JRNL_MAX_NUM_FILES << "]";
     std::ostringstream oss2;
-    oss2 << "Default size for each journal file in multiples of read pages (1 read page = 64kiB). [Allowable values: " <<
+    oss2 << "Default size for each journal file in multiples of read pages (1 read page = 64KiB). [Allowable values: " <<
                     JRNL_MIN_FILE_SIZE / JRNL_RMGR_PAGE_SIZE << " - " << JRNL_MAX_FILE_SIZE / JRNL_RMGR_PAGE_SIZE << "]";
     std::ostringstream oss3;
     oss3 << "Number of files for transaction prepared list journal instance. [Allowable values: " <<
                     JRNL_MIN_NUM_FILES << " - " << JRNL_MAX_NUM_FILES << "]";
     std::ostringstream oss4;
-    oss4 << "Size of each transaction prepared list journal file in multiples of read pages (1 read page = 64kiB) [Allowable values: " <<
+    oss4 << "Size of each transaction prepared list journal file in multiples of read pages (1 read page = 64KiB) [Allowable values: " <<
                     JRNL_MIN_FILE_SIZE / JRNL_RMGR_PAGE_SIZE << " - " << JRNL_MAX_FILE_SIZE / JRNL_RMGR_PAGE_SIZE << "]";
     addOptions()
         ("store-dir", qpid::optValue(storeDir, "DIR"),

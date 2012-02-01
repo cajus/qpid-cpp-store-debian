@@ -29,8 +29,8 @@ if ! test -d "$QPID_DIR" ; then
     echo "WARNING: QPID_DIR is not set skipping system tests."
     exit
 fi
-STORE_LIB=../lib/.libs/msgstore.so
-
+STORE_LIB=../../lib/.libs/msgstore.so
+CLUSTER_LIB=$QPID_BLD/src/.libs/cluster.so
 xml_spec=$QPID_DIR/specs/amqp.0-10-qpid-errata.xml
 test -f $xml_spec || error "$xml_spec not found: invalid \$QPID_DIR ?"
 export PYTHONPATH=$QPID_DIR/python:$QPID_DIR/extras/qmf/src/py
@@ -39,13 +39,13 @@ echo "Using directory $TMP_DATA_DIR"
 
 fail=0
 
-# Run the tests with a given set of flags
-BROKER_OPTS="--no-module-dir --load-module=$STORE_LIB --data-dir=$TMP_DATA_DIR --auth=no --wcache-page-size 16"
+# Run the broker as part of a cluster.
+BROKER_OPTS="--no-module-dir --load-module=$STORE_LIB --load-module=$CLUSTER_LIB --data-dir=$TMP_DATA_DIR --auth=no --wcache-page-size 16 --cluster-name=$HOSTNAME.$$"
 run_tests() {
     for p in `seq 1 8`; do
-	$abs_srcdir/start_broker "$@" ${BROKER_OPTS} || { echo "FAIL broker start";  return 1; }
-	python "$abs_srcdir/persistence.py" -s "$xml_spec" -b localhost:`cat qpidd.port` -p $p -r 3 || fail=1; 
-	$abs_srcdir/stop_broker
+	$abs_srcdir/../start_broker "$@" ${BROKER_OPTS} || { echo "FAIL broker start";  return 1; }
+	python "$abs_srcdir/../persistence.py" -s "$xml_spec" -b localhost:`cat qpidd.port` -p $p -r 3 || fail=1; 
+	$abs_srcdir/../stop_broker
     done
 }
 

@@ -32,7 +32,8 @@ using namespace qpid::framing;
 struct MessageUtils
 {
     static boost::intrusive_ptr<Message> createMessage(const string& exchange, const string& routingKey,
-                                                       const Uuid& messageId=Uuid(), uint64_t contentSize = 0)
+                                                       const Uuid& messageId=Uuid(), const bool persistent = false,
+                                                       const uint64_t contentSize = 0, const std::string& correlationId = std::string())
     {
         boost::intrusive_ptr<Message> msg(new Message());
 
@@ -45,7 +46,10 @@ struct MessageUtils
         MessageProperties* props = msg->getFrames().getHeaders()->get<MessageProperties>(true);
         props->setContentLength(contentSize);
         props->setMessageId(messageId);
+        props->setCorrelationId(correlationId);
         msg->getFrames().getHeaders()->get<DeliveryProperties>(true)->setRoutingKey(routingKey);
+        if (persistent)
+            msg->getFrames().getHeaders()->get<DeliveryProperties>(true)->setDeliveryMode(PERSISTENT);
         return msg;
     }
 

@@ -4,7 +4,7 @@
  * Qpid asynchronous store plugin library
  *
  * Messaging journal time struct mrg::journal::time_ns, derived from
- * the ::timespec struct and provided with helper functions.
+ * the timespec struct and provided with helper functions.
  *
  * \author Kim van der Riet
  *

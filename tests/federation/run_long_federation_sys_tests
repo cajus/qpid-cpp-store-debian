@@ -1,6 +1,6 @@
-#!/bin/bash
-
-# Copyright (c) 2008, 2009 Red Hat, Inc.
+#! /bin/bash
+#
+# Copyright (c) 2010 Red Hat, Inc.
 #
 # This file is part of the Qpid async store library msgstore.so.
 #
@@ -21,7 +21,7 @@
 #
 # The GNU Lesser General Public License is available in the file COPYING.
 
-QPIDD=$QPID_BLD/src/qpidd
-rm -f qpidd.vglog* qpidd.log
-test -n "$VALGRIND" && VALGRIND="$VALGRIND --log-file=qpidd.vglog --suppressions=$QPID_DIR/cpp/src/tests/.valgrind.supp --"
-exec libtool --mode=execute $VALGRIND $QPIDD --daemon --port=0 --log-enable error+ --log-to-file qpidd.log "$@" > qpidd.port
+
+# Run the federation system tests (long version).
+
+./run_federation_sys_tests LONG_TEST $@

@@ -148,9 +148,7 @@ void restart()
 
 boost::intrusive_ptr<Message> createMessage(const string& id, const string& exchange="exchange", const string& key="routing_key")
 {
-    boost::intrusive_ptr<Message> msg = MessageUtils::createMessage(exchange, key);
-    msg->getProperties<MessageProperties>()->setCorrelationId(id);
-    msg->getProperties<DeliveryProperties>()->setDeliveryMode(PERSISTENT);
+    boost::intrusive_ptr<Message> msg = MessageUtils::createMessage(exchange, key, Uuid(), true, 0, id);
     return msg;
 }
 

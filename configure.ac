@@ -226,6 +226,7 @@ AC_CONFIG_FILES([
   perf/Makefile
   tests/Makefile
   tests/cluster/Makefile
+  tests/federation/Makefile
   tests/jrnl/Makefile
   tests/jrnl/jtt/Makefile
   tools/Makefile

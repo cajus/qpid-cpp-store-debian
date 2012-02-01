@@ -38,6 +38,7 @@ using namespace std;
 struct StorePlugin : public Plugin {
 
     MessageStoreImpl::StoreOptions options;
+    boost::shared_ptr<MessageStoreImpl> store;
 
     Options* getOptions() { return &options; }
 
@@ -45,7 +46,7 @@ struct StorePlugin : public Plugin {
     {
         Broker* broker = dynamic_cast<Broker*>(&target);
         if (!broker) return;
-        boost::shared_ptr<MessageStoreImpl> store(new MessageStoreImpl(broker->getTimer()));
+        store.reset(new MessageStoreImpl(broker->getTimer()));
         DataDir& dataDir = broker->getDataDir ();
         if (options.storeDir.empty ())
         {
@@ -64,7 +65,6 @@ struct StorePlugin : public Plugin {
     {
         Broker* broker = dynamic_cast<Broker*>(&target);
         if (!broker) return;
-        MessageStoreImpl* store=dynamic_cast<MessageStoreImpl*>(&broker->getStore());
         if (!store) return;
         // Not done in earlyInitialize as the Broker::isInCluster test won't work there.
         if (broker->isInCluster()) {
@@ -77,7 +77,7 @@ struct StorePlugin : public Plugin {
 
     void finalize()
     {
-        // This function intentionally left blank
+        store.reset();
     }
 
     const char* id() {return "StorePlugin";}

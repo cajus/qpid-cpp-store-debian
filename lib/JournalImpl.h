@@ -83,6 +83,7 @@ class JournalImpl : public qpid::broker::ExternalQueueStore, public mrg::journal
     bool getEventsTimerSetFlag;
     boost::intrusive_ptr<qpid::sys::TimerTask> getEventsFireEventsPtr;
     qpid::sys::Mutex _getf_lock;
+    qpid::sys::Mutex _read_lock;
 
     u_int64_t lastReadRid; // rid of last read msg for loadMsgContent() - detects out-of-order read requests
     std::vector<u_int64_t> oooRidList; // list of out-of-order rids (greater than current rid) encountered during read sequence
@@ -114,6 +115,8 @@ class JournalImpl : public qpid::broker::ExternalQueueStore, public mrg::journal
                 DeleteCallback deleteCallback=DeleteCallback() );
 
     virtual ~JournalImpl();
+
+    void initManagement(qpid::management::ManagementAgent* agent);
 
     void initialize(const u_int16_t num_jfiles,
                     const bool auto_expand,

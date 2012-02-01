@@ -60,7 +60,7 @@
 #define JRNL_DBLK_SIZE          128         ///< Data block size in bytes (CANNOT BE LESS THAN 32!)
 #define JRNL_SBLK_SIZE          4           ///< Disk softblock size in multiples of JRNL_DBLK_SIZE
 #define JRNL_MIN_FILE_SIZE      128         ///< Min. jrnl file size in sblks (excl. file_hdr)
-#define JRNL_MAX_FILE_SIZE      4194304     ///< Max. jrnl file size in sblks (excl. file_hdr)
+#define JRNL_MAX_FILE_SIZE      4194176     ///< Max. jrnl file size in sblks (excl. file_hdr)
 #define JRNL_MIN_NUM_FILES      4           ///< Min. number of journal files
 #define JRNL_MAX_NUM_FILES      64          ///< Max. number of journal files
 #define JRNL_ENQ_THRESHOLD      80          ///< Percent full when enqueue connection will be closed

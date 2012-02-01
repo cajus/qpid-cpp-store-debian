@@ -37,7 +37,8 @@ all-local: .valgrindrc .valgrind.supp
 
 TESTS = \
   run_cpp_cluster_tests \
-  run_python_cluster_tests
+  run_python_cluster_tests \
+  system_test.sh
 
 LONG_TESTS = \
   run_long_python_cluster_tests

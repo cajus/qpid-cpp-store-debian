@@ -75,8 +75,7 @@ void push()
     Uuid messageId(true);
     ids.push(messageId);
 
-    boost::intrusive_ptr<Message> msg = MessageUtils::createMessage("exchange", "routing_key", messageId, 0);
-    msg->getProperties<DeliveryProperties>()->setDeliveryMode(PERSISTENT);
+    boost::intrusive_ptr<Message> msg = MessageUtils::createMessage("exchange", "routing_key", messageId, true, 0);
 
     queue->deliver(msg);
 }

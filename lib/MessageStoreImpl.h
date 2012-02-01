@@ -334,8 +334,8 @@ class MessageStoreImpl : public qpid::broker::MessageStore, public qpid::managem
     void loadContent(const qpid::broker::PersistableQueue& queue,
                      const boost::intrusive_ptr<const qpid::broker::PersistableMessage>& msg,
                      std::string& data,
-                     u_int64_t offset,
-                     u_int32_t length);
+                     uint64_t offset,
+                     uint32_t length);
 
     void enqueue(qpid::broker::TransactionContext* ctxt,
                  const boost::intrusive_ptr<qpid::broker::PersistableMessage>& msg,

@@ -91,6 +91,19 @@ func_set_env ()
 	    fi
 	
 	    # Paths and dirs
+        #if test -z ${abs_srcdir}; then
+	    #    abs_srcdir=`pwd`
+        #fi
+	    source $QPID_BLD/src/tests/test_env.sh
+        # Override these two settings from test_env.sh:
+        export RECEIVER_EXEC=$QPID_TEST_EXEC_DIR/qpid-receive
+        export SENDER_EXEC=$QPID_TEST_EXEC_DIR/qpid-send
+        
+        echo "abs_srcdir=$abs_srcdir"
+        export STORE_LIB="`pwd`/../lib/.libs/msgstore.so"
+        export STORE_ENABLE=1
+        export CLUSTER_LIB="${QPID_BLD}/src/.libs/cluster.so"
+
 	    PYTHON_DIR="${QPID_DIR}/python"
 	    export PYTHONPATH="${PYTHONPATH}":"${PYTHON_DIR}":"${QPID_DIR}/extras/qmf/src/py":"${QPID_DIR}/tools/src/py":"${QPID_DIR}/cpp/src/tests":"${abs_srcdir}"
 	
@@ -128,7 +141,6 @@ func_set_env ()
 	    # Test Data
 	    
     fi
-
 }
 
 
@@ -244,8 +256,8 @@ func_mk_data_dir
 
 # Check expected environment vars are set
 func_checkpaths PYTHON_DIR PYTHONPATH TMP_DATA_DIR
-func_checklibs STORE_LIB
-func_checkexecs QPIDD_EXEC
+func_checklibs STORE_LIB CLUSTER_LIB
+func_checkexecs QPIDD_EXEC QPID_CONFIG_EXEC QPID_ROUTE_EXEC SENDER_EXEC RECEIVER_EXEC
 
 FAILING_PYTHON_TESTS="${abs_srcdir}/failing_python_tests.txt"
 

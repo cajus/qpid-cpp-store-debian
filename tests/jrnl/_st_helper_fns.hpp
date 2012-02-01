@@ -626,7 +626,7 @@ enq_msg(jcntl& jc,
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -647,7 +647,7 @@ enq_extern_msg(jcntl& jc, const u_int64_t rid, const std::size_t msg_size, const
     if (dtp->done()) delete dtp;
     return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -669,7 +669,7 @@ enq_txn_msg(jcntl& jc, const u_int64_t rid, const string& msg, const string& xid
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -690,7 +690,7 @@ enq_extern_txn_msg(jcntl& jc, const u_int64_t rid, const std::size_t msg_size, c
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -712,7 +712,7 @@ deq_msg(jcntl& jc, const u_int64_t drid, const u_int64_t rid, const iores exp_re
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -735,7 +735,7 @@ deq_txn_msg(jcntl& jc, const u_int64_t drid, const u_int64_t rid, const string& 
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -753,7 +753,7 @@ txn_abort(jcntl& jc, const u_int64_t rid, const string& xid, const iores exp_ret
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 u_int64_t
@@ -771,7 +771,7 @@ txn_commit(jcntl& jc, const u_int64_t rid, const string& xid, const iores exp_re
         if (dtp->done()) delete dtp;
         return dtok_rid;
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 }
 
 void
@@ -792,7 +792,7 @@ read_msg(jcntl& jc, string& msg, string& xid, bool& transient, bool& external, c
         while (handle_jcntl_response(res, jc, aio_sleep_cnt, "read_msg", exp_ret, dtp))
             res = jc.read_data_record(&mp, msize, &xp, xsize, transient, external, dtp);
     }
-    catch (exception e) { delete dtp; throw; }
+    catch (exception& e) { delete dtp; throw; }
 
     if (mp)
         msg.assign((char*)mp, msize);

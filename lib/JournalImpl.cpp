@@ -70,7 +70,6 @@ JournalImpl::JournalImpl(qpid::sys::Timer& timer_,
                          _dlen(0),
                          _dtok(),
                          _external(false),
-                         _agent(a),
                          _mgmtObject(0),
                          deleteCallback(onDelete)
 {
@@ -81,26 +80,7 @@ JournalImpl::JournalImpl(qpid::sys::Timer& timer_,
         timer.add(inactivityFireEventPtr);
     }
 
-    if (_agent != 0)
-    {
-        _mgmtObject = new _qmf::Journal
-            (_agent, (qpid::management::Manageable*) this);
-
-        _mgmtObject->set_name(journalId);
-        _mgmtObject->set_directory(journalDirectory);
-        _mgmtObject->set_baseFileName(journalBaseFilename);
-        _mgmtObject->set_readPageSize(JRNL_RMGR_PAGE_SIZE * JRNL_SBLK_SIZE * JRNL_DBLK_SIZE);
-        _mgmtObject->set_readPages(JRNL_RMGR_PAGES);
-
-        // The following will be set on initialize(), but being properties, these must be set to 0 in the meantime
-        _mgmtObject->set_initialFileCount(0);
-        _mgmtObject->set_dataFileSize(0);
-        _mgmtObject->set_currentFileCount(0);
-        _mgmtObject->set_writePageSize(0);
-        _mgmtObject->set_writePages(0);
-
-        _agent->addObject(_mgmtObject, 0, true);
-    }
+    initManagement(a);
 
     log(LOG_NOTICE, "Created");
     std::ostringstream oss;
@@ -126,6 +106,33 @@ JournalImpl::~JournalImpl()
 
     log(LOG_DEBUG, "Destroyed");
 }
+
+void
+JournalImpl::initManagement(qpid::management::ManagementAgent* a)
+{
+    _agent = a;
+    if (_agent != 0)
+    {
+        _mgmtObject = new _qmf::Journal
+            (_agent, (qpid::management::Manageable*) this);
+
+        _mgmtObject->set_name(_jid);
+        _mgmtObject->set_directory(_jdir.dirname());
+        _mgmtObject->set_baseFileName(_base_filename);
+        _mgmtObject->set_readPageSize(JRNL_RMGR_PAGE_SIZE * JRNL_SBLK_SIZE * JRNL_DBLK_SIZE);
+        _mgmtObject->set_readPages(JRNL_RMGR_PAGES);
+
+        // The following will be set on initialize(), but being properties, these must be set to 0 in the meantime
+        _mgmtObject->set_initialFileCount(0);
+        _mgmtObject->set_dataFileSize(0);
+        _mgmtObject->set_currentFileCount(0);
+        _mgmtObject->set_writePageSize(0);
+        _mgmtObject->set_writePages(0);
+
+        _agent->addObject(_mgmtObject, 0, true);
+    }
+}
+
 
 void
 JournalImpl::initialize(const u_int16_t num_jfiles,
@@ -250,6 +257,7 @@ JournalImpl::recover_complete()
 bool
 JournalImpl::loadMsgContent(u_int64_t rid, std::string& data, size_t length, size_t offset)
 {
+    qpid::sys::Mutex::ScopedLock sl(_read_lock);
     if (_dtok.rid() != rid)
     {
         // Free any previous msg
@@ -267,8 +275,11 @@ JournalImpl::loadMsgContent(u_int64_t rid, std::string& data, size_t length, siz
         // jumpover points and allow the read to jump back to the first known jumpover point - but this needs
         // a mechanism in rrfc to accomplish it. Also helpful is a struct containing a journal address - a
         // combination of lid/offset.
-        if (oooFlag || rid < lastReadRid)
+        // NOTE: The second part of the if stmt (rid < lastReadRid) is required to handle browsing.
+        if (oooFlag || rid < lastReadRid) {
             _rmgr.invalidate();
+            oooRidList.clear();
+        }
         _dlen = 0;
         _dtok.reset();
         _dtok.set_wstate(DataTokenImpl::ENQ);
@@ -278,7 +289,6 @@ JournalImpl::loadMsgContent(u_int64_t rid, std::string& data, size_t length, siz
         bool transient = false;
         bool done = false;
         bool rid_found = false;
-        oooRidList.clear();
         while (!done) {
             iores res = read_data_record(&_datap, _dlen, &_xidp, xlen, transient, _external, &_dtok);
             switch (res) {
