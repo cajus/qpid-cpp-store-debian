@@ -1,0 +1,194 @@
+--- a/lib/DataTokenImpl.h
++++ b/lib/DataTokenImpl.h
+@@ -25,8 +25,8 @@
+ #define _DataTokenImpl_
+ 
+ #include "jrnl/data_tok.hpp"
+-#include <boost/intrusive_ptr.hpp>
+ #include <qpid/broker/PersistableMessage.h>
++#include <boost/intrusive_ptr.hpp>
+ 
+ namespace mrg {
+ namespace msgstore {
+--- a/lib/TxnCtxt.h
++++ b/lib/TxnCtxt.h
+@@ -24,7 +24,6 @@
+ #ifndef _TxnCtxt_
+ #define _TxnCtxt_
+ 
+-#include <boost/intrusive_ptr.hpp>
+ #include <db-inc.h>
+ #include <memory>
+ #include <set>
+@@ -38,6 +37,8 @@
+ #include "qpid/sys/Mutex.h"
+ #include "qpid/sys/uuid.h"
+ 
++#include <boost/intrusive_ptr.hpp>
++
+ namespace mrg {
+ namespace msgstore {
+ 
+--- a/lib/jrnl/fcntl.cpp
++++ b/lib/jrnl/fcntl.cpp
+@@ -39,6 +39,7 @@
+ #include "jrnl/jerrno.hpp"
+ #include "jrnl/jexception.hpp"
+ #include <sstream>
++#include <unistd.h>
+ 
+ namespace mrg
+ {
+--- a/lib/jrnl/jdir.cpp
++++ b/lib/jrnl/jdir.cpp
+@@ -42,6 +42,7 @@
+ #include "jrnl/jexception.hpp"
+ #include <sstream>
+ #include <sys/stat.h>
++#include <unistd.h>
+ 
+ namespace mrg
+ {
+--- a/lib/jrnl/deq_rec.cpp
++++ b/lib/jrnl/deq_rec.cpp
+@@ -115,7 +115,7 @@
+             {
+                 if (wsize > rem)
+                     wsize = rem;
+-                std::memcpy(wptr, (char*)_xidp + rec_offs, wsize);
++                std::memcpy(wptr, (const char*)_xidp + rec_offs, wsize);
+                 wr_cnt += wsize;
+                 rem -= wsize;
+             }
+@@ -143,7 +143,7 @@
+             std::size_t wsize = _deq_hdr._xidsize > rec_offs ? _deq_hdr._xidsize - rec_offs : 0;
+             if (wsize)
+             {
+-                std::memcpy(wptr, (char*)_xidp + rec_offs, wsize);
++                std::memcpy(wptr, (const char*)_xidp + rec_offs, wsize);
+                 wr_cnt += wsize;
+             }
+             rec_offs -= _deq_hdr._xidsize - wsize;
+--- a/lib/jrnl/enq_rec.cpp
++++ b/lib/jrnl/enq_rec.cpp
+@@ -142,7 +142,7 @@
+                 {
+                     if (wsize > rem)
+                         wsize = rem;
+-                    std::memcpy((char*)wptr + wr_cnt, (char*)_data + rec_offs, wsize);
++                    std::memcpy((char*)wptr + wr_cnt, (const char*)_data + rec_offs, wsize);
+                     wr_cnt += wsize;
+                     rem -= wsize;
+                 }
+@@ -171,14 +171,14 @@
+             std::size_t wsize = _enq_hdr._xidsize > rec_offs ? _enq_hdr._xidsize - rec_offs : 0;
+             if (wsize)
+             {
+-                std::memcpy(wptr, (char*)_xidp + rec_offs, wsize);
++                std::memcpy(wptr, (const char*)_xidp + rec_offs, wsize);
+                 wr_cnt += wsize;
+             }
+             rec_offs -= _enq_hdr._xidsize - wsize;
+             wsize = _enq_hdr._dsize > rec_offs ? _enq_hdr._dsize - rec_offs : 0;
+             if (wsize && !_enq_hdr.is_external())
+             {
+-                std::memcpy((char*)wptr + wr_cnt, (char*)_data + rec_offs, wsize);
++                std::memcpy((char*)wptr + wr_cnt, (const char*)_data + rec_offs, wsize);
+                 wr_cnt += wsize;
+             }
+             rec_offs -= _enq_hdr._dsize - wsize;
+--- a/lib/jrnl/jcntl.cpp
++++ b/lib/jrnl/jcntl.cpp
+@@ -955,7 +955,7 @@
+         ofsp.seekp(file_pos);
+         void* buff = std::malloc(JRNL_DBLK_SIZE);
+         assert(buff != 0);
+-        std::memcpy(buff, (void*)&xmagic, sizeof(xmagic));
++        std::memcpy(buff, (const void*)&xmagic, sizeof(xmagic));
+         // Normally, RHM_CLEAN must be set before these fills are done, but this is a recover
+         // situation (i.e. performance is not an issue), and it makes the location of the write
+         // clear should inspection of the file be required.
+--- a/lib/jrnl/rrfc.cpp
++++ b/lib/jrnl/rrfc.cpp
+@@ -34,9 +34,14 @@
+ #include "jrnl/rrfc.hpp"
+ 
+ #include <cerrno>
++#include <cstdlib>
++#include <cstring>
+ #include <fcntl.h>
++#include <iomanip>
+ #include "jrnl/jerrno.hpp"
+ #include "jrnl/jexception.hpp"
++#include <sstream>
++#include <unistd.h>
+ 
+ namespace mrg
+ {
+--- a/lib/jrnl/txn_rec.cpp
++++ b/lib/jrnl/txn_rec.cpp
+@@ -115,7 +115,7 @@
+             {
+                 if (wsize > rem)
+                     wsize = rem;
+-                std::memcpy(wptr, (char*)_xidp + rec_offs, wsize);
++                std::memcpy(wptr, (const char*)_xidp + rec_offs, wsize);
+                 wr_cnt += wsize;
+                 rem -= wsize;
+             }
+@@ -143,7 +143,7 @@
+             std::size_t wsize = _txn_hdr._xidsize > rec_offs ? _txn_hdr._xidsize - rec_offs : 0;
+             if (wsize)
+             {
+-                std::memcpy(wptr, (char*)_xidp + rec_offs, wsize);
++                std::memcpy(wptr, (const char*)_xidp + rec_offs, wsize);
+                 wr_cnt += wsize;
+             }
+             rec_offs -= _txn_hdr._xidsize - wsize;
+--- a/lib/jrnl/wmgr.cpp
++++ b/lib/jrnl/wmgr.cpp
+@@ -193,7 +193,7 @@
+ 
+             if (xid_len) // If part of transaction, add to transaction map
+             {
+-                std::string xid((char*)xid_ptr, xid_len);
++                std::string xid((const char*)xid_ptr, xid_len);
+                 _tmap.insert_txn_data(xid, txn_data(rid, 0, dtokp->fid(), true));
+             }
+             else
+@@ -293,7 +293,7 @@
+             {
+                 // If the enqueue is part of a pending txn, it will not yet be in emap
+                 _emap.lock(dequeue_rid); // ignore rid not found error
+-                std::string xid((char*)xid_ptr, xid_len);
++                std::string xid((const char*)xid_ptr, xid_len);
+                 _tmap.insert_txn_data(xid, txn_data(rid, dequeue_rid, dtokp->fid(), false));
+             }
+             else
+@@ -390,7 +390,7 @@
+             dtokp->set_wstate(data_tok::ABORT_SUBM);
+ 
+             // Delete this txn from tmap, unlock any locked records in emap
+-            std::string xid((char*)xid_ptr, xid_len);
++            std::string xid((const char*)xid_ptr, xid_len);
+             txn_data_list tdl = _tmap.get_remove_tdata_list(xid); // tdl will be empty if xid not found
+             for (tdl_itr itr = tdl.begin(); itr != tdl.end(); itr++)
+             {
+@@ -480,7 +480,7 @@
+             dtokp->set_wstate(data_tok::COMMIT_SUBM);
+ 
+             // Delete this txn from tmap, process records into emap
+-            std::string xid((char*)xid_ptr, xid_len);
++            std::string xid((const char*)xid_ptr, xid_len);
+             txn_data_list tdl = _tmap.get_remove_tdata_list(xid); // tdl will be empty if xid not found
+             for (tdl_itr itr = tdl.begin(); itr != tdl.end(); itr++)
+             {
+@@ -961,7 +961,7 @@
+     while (_cached_offset_dblks < wdblks)
+     {
+         void* wptr = (void*)((char*)_page_ptr_arr[_pg_index] + _pg_offset_dblks * JRNL_DBLK_SIZE);
+-        std::memcpy(wptr, (void*)&xmagic, sizeof(xmagic));
++        std::memcpy(wptr, (const void*)&xmagic, sizeof(xmagic));
+ #ifdef RHM_CLEAN
+         std::memset((char*)wptr + sizeof(xmagic), RHM_CLEAN_CHAR, JRNL_DBLK_SIZE - sizeof(xmagic));
+ #endif

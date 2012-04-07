@@ -1,3 +1,10 @@
+rhmessaging (0.14-2) unstable; urgency=low
+
+  * Applied a couple of compile fixes to make things work
+    with GCC 4.7 series. (Closes: #667357)
+
+ -- Cajus Pollmeier <cajus@debian.org>  Sat, 07 Apr 2012 11:19:14 +0200
+
 rhmessaging (0.14-1) unstable; urgency=low
 
   * New upstream release.

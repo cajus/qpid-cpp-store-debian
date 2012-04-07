@@ -1,3 +1,4 @@
+gcc-47-compile-fixes.patch
 no-etc.patch
 libexec.patch
 db5.patch
