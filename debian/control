@@ -2,14 +2,14 @@ Source: rhmessaging
 Section: misc
 Priority: extra
 Maintainer: Cajus Pollmeier <cajus@debian.org>
-Build-Depends: debhelper (>= 7.0.50~), autotools-dev, autoconf (>= 2.61), automake (>= 1.9.6), libtool (>= 1.5.22), libqpidtypes1-dev (>= 0.12), libqpidcommon2-dev (>= 0.12), libqmf2-dev (>=0.12), libqpidbroker2-dev (>=0.12), libaio-dev, libdb++-dev, python (>= 2.6.6-3~), libboost-all-dev (>= 1.35), uuid-dev, valgrind [any-i386 any-amd64 arm], python-qpid, python-qmf, python-qpid-extras-qmf, qpidd
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev, autoconf (>= 2.61), automake (>= 1.9.6), libtool (>= 1.5.22), libqpidtypes1-dev (>= 0.16-1), libqpidcommon2-dev (>= 0.16-1), libqmf2-dev (>=0.16-1), libqpidbroker2-dev (>=0.16-1), libaio-dev, libdb++-dev, python (>= 2.6.6-3~), libboost-all-dev (>= 1.35), uuid-dev, valgrind [any-i386 any-amd64 arm], python-qpid, python-qmf, python-qpid-extras-qmf, qpidd
 X-Python-Version: >= 2.6
 Standards-Version: 3.9.2
 Homepage: http://qpidcomponents.org
 
 Package: qpidd-msgstore
-Architecture: any
-Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, qpidd (>= 0.12)
+Architecture: linux-any
+Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, qpidd (>= 0.16-1)
 Provides: ${python:Provides}
 Description: enterprise messaging system - AMQP broker persistence module
  Apache Qpid is a cross-platform enterprise messaging system which implements
