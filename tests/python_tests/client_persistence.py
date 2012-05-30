@@ -69,8 +69,8 @@ class ExchangeQueueTests(StoreTest):
         self.check_message(broker, "e", msg2, True)
         
     
-    def test_lvq(self):
-        """Test LVQ."""        
+    def test_legacy_lvq(self):
+        """Test legacy LVQ."""        
         broker = self.broker(store_args(), name="test_lvq", expect=EXPECT_EXIT_OK)
         ma1 = Message("A1", durable=True, correlation_id="Msg0005", properties={"qpid.LVQ_key":"A"})
         ma2 = Message("A2", durable=True, correlation_id="Msg0006", properties={"qpid.LVQ_key":"A"})
@@ -95,8 +95,9 @@ class ExchangeQueueTests(StoreTest):
         broker.terminate()
         
         broker = self.broker(store_args(), name="test_lvq")
-        self.check_messages(broker, "lvq-test", [mc4, ma4], True)
-    
+        self.check_messages(broker, "lvq-test", [ma4, mc4], True)
+        
+        
     def test_fanout_exchange(self):
         """Test Fanout Exchange"""
         broker = self.broker(store_args(), name="test_fanout_exchange", expect=EXPECT_EXIT_OK)

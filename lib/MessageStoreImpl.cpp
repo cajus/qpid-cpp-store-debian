@@ -27,10 +27,12 @@
 #include "BufferValue.h"
 #include "IdDbt.h"
 #include "jrnl/txn_map.hpp"
+#include "qpid/framing/FieldValue.h"
 #include "qpid/log/Statement.h"
 #include "qmf/com/redhat/rhm/store/Package.h"
 #include "StoreException.h"
 #include <dirent.h>
+#include <db.h>
 
 #define MAX_AIO_SLEEPS 100000 // tot: ~1 sec
 #define AIO_SLEEP_TIME_US  10 // 0.01 ms
@@ -48,33 +50,33 @@ qpid::sys::Duration MessageStoreImpl::defJournalFlushTimeout(500 * qpid::sys::TI
 qpid::sys::Mutex TxnCtxt::globalSerialiser;
 
 MessageStoreImpl::TplRecoverStruct::TplRecoverStruct(const u_int64_t _rid,
-                                                              const bool _deq_flag,
-                                                              const bool _commit_flag,
-                                                              const bool _tpc_flag) :
-                                                              rid(_rid),
-                                                              deq_flag(_deq_flag),
-                                                              commit_flag(_commit_flag),
-                                                              tpc_flag(_tpc_flag)
+                                                     const bool _deq_flag,
+                                                     const bool _commit_flag,
+                                                     const bool _tpc_flag) :
+                                                     rid(_rid),
+                                                     deq_flag(_deq_flag),
+                                                     commit_flag(_commit_flag),
+                                                     tpc_flag(_tpc_flag)
 {}
 
 MessageStoreImpl::MessageStoreImpl(qpid::sys::Timer& timer_, const char* envpath) :
-                                 numJrnlFiles(0),
-                                 autoJrnlExpand(false),
-                                 autoJrnlExpandMaxFiles(0),
-                                 jrnlFsizeSblks(0),
-                                 truncateFlag(false),
-                                 wCachePgSizeSblks(0),
-                                 wCacheNumPages(0),
-                                 tplNumJrnlFiles(0),
-                                 tplJrnlFsizeSblks(0),
-                                 tplWCachePgSizeSblks(0),
-                                 tplWCacheNumPages(0),
-                                 highestRid(0),
-                                 isInit(false),
-                                 envPath(envpath),
-                                 timer(timer_),
-                                 mgmtObject(0),
-                                 agent(0)
+                                   numJrnlFiles(0),
+                                   autoJrnlExpand(false),
+                                   autoJrnlExpandMaxFiles(0),
+                                   jrnlFsizeSblks(0),
+                                   truncateFlag(false),
+                                   wCachePgSizeSblks(0),
+                                   wCacheNumPages(0),
+                                   tplNumJrnlFiles(0),
+                                   tplJrnlFsizeSblks(0),
+                                   tplWCachePgSizeSblks(0),
+                                   tplWCacheNumPages(0),
+                                   highestRid(0),
+                                   isInit(false),
+                                   envPath(envpath),
+                                   timer(timer_),
+                                   mgmtObject(0),
+                                   agent(0)
 {}
 
 u_int16_t MessageStoreImpl::chkJrnlNumFilesParam(const u_int16_t param, const std::string paramName)

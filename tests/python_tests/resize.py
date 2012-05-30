@@ -32,7 +32,8 @@ from qpid.messaging import Message
 
 class ResizeTest(StoreTest):
     
-    resize_tool = os.getenv("RESIZE_TOOL", "../../../tools/resize")
+    src_dir = os.getenv("abs_srcdir")
+    resize_tool = os.getenv("RESIZE_TOOL", src_dir + "/../tools/resize")
     
     def _resize_store(self, store_dir, queue_name, resize_num_files, resize_file_size, exp_fail):
         for f in glob.glob(os.path.join(store_dir, "*")):

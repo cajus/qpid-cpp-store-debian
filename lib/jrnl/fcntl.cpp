@@ -39,6 +39,7 @@
 #include "jrnl/jerrno.hpp"
 #include "jrnl/jexception.hpp"
 #include <sstream>
+#include <unistd.h>
 
 namespace mrg
 {

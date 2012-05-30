@@ -341,6 +341,7 @@ class StoreTest(BrokerTest):
             if transactional:
                 ssn.commit()
             return ssn
+            
     
     # Functions for finding strings in the broker log file (or other files)
 
