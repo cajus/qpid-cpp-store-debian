@@ -33,7 +33,7 @@ STORE_LIB=../lib/.libs/msgstore.so
 
 xml_spec=$QPID_DIR/specs/amqp.0-10-qpid-errata.xml
 test -f $xml_spec || error "$xml_spec not found: invalid \$QPID_DIR ?"
-export PYTHONPATH=$QPID_DIR/python:$QPID_DIR/extras/qmf/src/py
+export PYTHONPATH=$QPID_DIR/python:$QPID_DIR/extras/qmf/src/py:$QPID_DIR/tools/src/py
 
 echo "Using directory $TMP_DATA_DIR"
 

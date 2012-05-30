@@ -23,8 +23,7 @@
 
 
 # Run the federation tests.
-
-source ./federation_tests_env.sh
+source ${abs_srcdir}/federation_tests_env.sh
 
 MODULENAME=federation_sys
 

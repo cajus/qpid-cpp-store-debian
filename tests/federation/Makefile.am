@@ -20,7 +20,6 @@
 # The GNU Lesser General Public License is available in the file COPYING.
 
 
-abs_builddir=@abs_builddir@
 abs_srcdir=@abs_srcdir@
 
 TMP_DATA_DIR=$(abs_srcdir)/../tmp_data_dir
@@ -40,8 +39,7 @@ TESTS_ENVIRONMENT = \
   QPID_DIR=$(QPID_DIR) \
   QPID_BLD=$(QPID_BLD) \
   TMP_DATA_DIR=$(TMP_DATA_DIR) \
-  abs_srcdir=$(abs_srcdir) \
-  abs_builddir=$(abs_builddir)
+  abs_srcdir=$(abs_srcdir)
   
 check-long: all
 	$(MAKE) check TESTS="$(LONG_TESTS)" SUBDIRS=.

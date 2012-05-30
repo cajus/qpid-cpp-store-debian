@@ -31,6 +31,7 @@
 #include <qpid/broker/RecoveryManagerImpl.h>
 #include <qpid/framing/AMQHeaderBody.h>
 #include <qpid/framing/FieldTable.h>
+#include <qpid/framing/FieldValue.h>
 #include "qpid/log/Logger.h"
 #include "qpid/sys/Timer.h"
 

@@ -35,6 +35,7 @@
 
 #include <cerrno>
 #include <fcntl.h>
+#include <unistd.h>
 #include "jrnl/jerrno.hpp"
 #include "jrnl/jexception.hpp"
 

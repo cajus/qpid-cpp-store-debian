@@ -138,7 +138,9 @@ AC_SUBST([QPID_CXXFLAGS])
 # Check for cluster module to see whether to enable cluster tests
 AC_MSG_CHECKING([presence of qpid cluster module])
 found_cluster_so=no
-if test x$with_qpid_checkout != x -a -f $QPID_SRC/.libs/cluster.so ; then
+if test x$with_qpid_build != x -a -f $QPID_BLD/src/.libs/cluster.so ; then
+  found_cluster_so=yes
+elif test x$with_qpid_checkout != x -a -f $QPID_SRC/.libs/cluster.so ; then
   found_cluster_so=yes
 elif test -f $QPID_LIB/qpid/daemon/cluster.so ; then
   found_cluster_so=yes  

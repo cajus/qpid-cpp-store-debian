@@ -42,6 +42,7 @@
 #include "jrnl/jexception.hpp"
 #include <sstream>
 #include <sys/stat.h>
+#include <unistd.h>
 
 namespace mrg
 {
@@ -284,15 +285,13 @@ jdir::delete_dir(const std::string& dirname, bool children_only)
             if (std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
             {
                 std::string full_name(dirname + "/" + entry->d_name);
-                if (::stat(full_name.c_str(), &s))
+                if (::lstat(full_name.c_str(), &s))
                 {
                     ::closedir(dir);
                     std::ostringstream oss;
                     oss << "stat: file=\"" << full_name << "\"" << FORMAT_SYSERR(errno);
                     throw jexception(jerrno::JERR_JDIR_STAT, oss.str(), "jdir", "delete_dir");
                 }
-                // FIXME: This fn does not handle symbolic links correctly and throws up
-                // For some reason, S_ISLNK() fails to identify links correctly.
                 if (S_ISREG(s.st_mode) || S_ISLNK(s.st_mode)) // This is a file or slink
                 {
                     if(::unlink(full_name.c_str()))
@@ -412,7 +411,7 @@ jdir::exists(const char* name)
         // Throw for any other condition
         std::ostringstream oss;
         oss << "file=\"" << name << "\"" << FORMAT_SYSERR(errno);
-        throw jexception(jerrno::JERR_JDIR_STAT, oss.str(), "jdir", "is_dir");
+        throw jexception(jerrno::JERR_JDIR_STAT, oss.str(), "jdir", "exists");
     }
     return true;
 }
