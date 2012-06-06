@@ -10,6 +10,11 @@ PACKAGE := $(shell dpkg-parsechangelog | sed -ne 's/^Source: \(.*\)$$/\1/p')
 SRC_VERSION := $(shell dpkg-parsechangelog | sed -ne 's/^Version: \(\([0-9]\+\):\)\?\(.*\)-.*/\3/p')
 TARBALL = $(PACKAGE)_$(SRC_VERSION).orig.tar.gz
 
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+CXXFLAGS += -Wno-error=cast-qual -Wno-error=cast-align
+export CXXFLAGS
+
 .PHONY: get-orig-source
 get-orig-source:
 	rm -rf get-orig-source $(TARBALL)
@@ -18,9 +23,6 @@ get-orig-source:
 	GZIP='--best --no-name' tar czf $(TARBALL) -C get-orig-source $(PACKAGE)-$(SRC_VERSION)
 	rm -rf get-orig-source
 	echo "  "$(TARBALL)" created; move it to the right destination to build the package"
-
-override_dh_auto_test:
-	# Skip until qpidd --quit does not segfault
 
 override_dh_auto_configure:
 	./bootstrap

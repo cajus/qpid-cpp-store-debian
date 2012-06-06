@@ -1,6 +1,9 @@
 rhmessaging (0.16-1) unstable; urgency=low
 
   * New upstream release.
+  * Build against 0.16 Qpid release. Closes #674331.
+  * Re-enabled most of the tests (federation is disabled for now).
+  * Build for all instead of linux-all.
 
  -- Cajus Pollmeier <cajus@debian.org>  Sat, 19 May 2012 11:19:10 +0200
 

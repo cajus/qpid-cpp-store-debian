@@ -1,6 +1,6 @@
 --- a/configure.ac
 +++ b/configure.ac
-@@ -177,17 +177,17 @@
+@@ -179,17 +179,17 @@
  AC_SUBST([LIB_DLOPEN])
  LIBS=$gl_saved_libs
  

@@ -1,4 +1,4 @@
-gcc-47-compile-fixes.patch
+disable-federation-test.patch
 no-etc.patch
 libexec.patch
 db5.patch
