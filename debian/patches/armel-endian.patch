@@ -1,0 +1,15 @@
+--- a/lib/jrnl/jcfg.hpp
++++ b/lib/jrnl/jcfg.hpp
+@@ -33,10 +33,10 @@
+ #ifndef mrg_journal_jcfg_hpp
+ #define mrg_journal_jcfg_hpp
+ 
+-#if defined(__i386__) /* little endian, 32 bits */
++#if defined(__i386__) || defined(__arm__) || defined(__MIPSEL__) /* little endian, 32 bits */
+ #define JRNL_LITTLE_ENDIAN
+ #define JRNL_32_BIT
+-#elif defined(__PPC__) || defined(__s390__)  /* big endian, 32 bits */
++#elif defined(__powerpc__) || defined(__s390__) || defined(__sparc__) || defined(__mips__) /* big endian, 32 bits */
+ #define JRNL_BIG_ENDIAN
+ #define JRNL_32_BIT
+ #elif defined(__ia64__) || defined(__x86_64__) || defined(__alpha__) /* little endian, 64 bits */

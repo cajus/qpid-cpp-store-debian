@@ -1,0 +1,23 @@
+--- a/lib/jrnl/fcntl.cpp
++++ b/lib/jrnl/fcntl.cpp
+@@ -345,6 +345,7 @@
+         u_int32_t this_write_sblks = nsblks >= nullbuffsize_sblks ? nullbuffsize_sblks : nsblks;
+         if (::write(fh, nullbuf, this_write_sblks * sblksize) == -1)
+         {
++            std::cout << "----------------write-fail-for-> " << _fname.c_str() << std::flush;
+             ::close(fh);
+             std::free(nullbuf);
+             std::ostringstream oss;
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -26,8 +26,8 @@
+ 
+ INCLUDES=-I$(top_srcdir)/lib -I$(abs_builddir)/../lib -I$(top_srcdir)/lib/gen
+ 
+-TMP_DATA_DIR=$(abs_srcdir)/tmp_data_dir
+-TMP_PYTHON_TEST_DIR=$(abs_srcdir)/python_tests.tmp
++TMP_DATA_DIR=/tmp/data_dir
++TMP_PYTHON_TEST_DIR=/tmp/python_tests.tmp
+  
+ SUBDIRS = jrnl . federation
+ if DO_CLUSTER_TESTS
