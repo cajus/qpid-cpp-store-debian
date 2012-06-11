@@ -1,3 +1,5 @@
+test-db-location.patch
+armel-endian.patch
 gcc-47-compile-fixes.patch
 no-etc.patch
 libexec.patch
