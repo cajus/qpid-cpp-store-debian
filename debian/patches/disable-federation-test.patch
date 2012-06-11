@@ -1,0 +1,11 @@
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -29,7 +29,7 @@
+ TMP_DATA_DIR=$(abs_srcdir)/tmp_data_dir
+ TMP_PYTHON_TEST_DIR=$(abs_srcdir)/python_tests.tmp
+  
+-SUBDIRS = jrnl . federation
++SUBDIRS = jrnl .
+ if DO_CLUSTER_TESTS
+ SUBDIRS += cluster
+ endif

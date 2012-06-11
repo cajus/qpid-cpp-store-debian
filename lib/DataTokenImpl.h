@@ -25,8 +25,8 @@
 #define _DataTokenImpl_
 
 #include "jrnl/data_tok.hpp"
-#include <boost/intrusive_ptr.hpp>
 #include <qpid/broker/PersistableMessage.h>
+#include <boost/intrusive_ptr.hpp>
 
 namespace mrg {
 namespace msgstore {

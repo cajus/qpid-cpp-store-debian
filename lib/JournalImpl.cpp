@@ -104,7 +104,7 @@ JournalImpl::~JournalImpl()
         _mgmtObject = 0;
     }
 
-    log(LOG_DEBUG, "Destroyed");
+    log(LOG_NOTICE, "Destroyed");
 }
 
 void

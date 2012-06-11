@@ -24,7 +24,6 @@
 #ifndef _TxnCtxt_
 #define _TxnCtxt_
 
-#include <boost/intrusive_ptr.hpp>
 #include <db-inc.h>
 #include <memory>
 #include <set>
@@ -37,6 +36,8 @@
 #include "qpid/broker/TransactionalStore.h"
 #include "qpid/sys/Mutex.h"
 #include "qpid/sys/uuid.h"
+
+#include <boost/intrusive_ptr.hpp>
 
 namespace mrg {
 namespace msgstore {

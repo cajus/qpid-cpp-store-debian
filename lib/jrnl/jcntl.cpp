@@ -648,7 +648,7 @@ jcntl::rcvr_janalyze(rcvdat& rd, const std::vector<std::string>* prep_txn_list_p
 
         // Check for journal full condition
         u_int16_t next_wr_fid = (rd._lfid + 1) % rd._njf;
-        rd._jfull = rd._ffid == next_wr_fid && rd._enq_cnt_list[next_wr_fid];
+        rd._jfull = rd._ffid == next_wr_fid && rd._enq_cnt_list[next_wr_fid] && rd._lffull;
     }
 }
 

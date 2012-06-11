@@ -53,7 +53,7 @@ const std::string test_dir(tdp && strlen(tdp) > 0 ? tdp : "/tmp/OrderingTest");
 
 // === Helper fns ===
 
-const string name("OrderingQueue");
+const std::string name("OrderingQueue");
 std::auto_ptr<MessageStoreImpl> store;
 QueueRegistry queues;
 Queue::shared_ptr queue;
